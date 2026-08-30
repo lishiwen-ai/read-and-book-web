@@ -232,6 +232,7 @@ h2 { font-size: 26px; }
 }
 .work-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .work-title { margin: 0; font-family: "Noto Serif SC", serif; font-size: 21px; line-height: 1.4; }
+.work-actions { display: flex; align-items: center; gap: 8px; }
 .work-category {
   flex: 0 0 auto;
   border-radius: 2px;
@@ -239,6 +240,26 @@ h2 { font-size: 26px; }
   background: var(--teal-light);
   color: var(--teal);
   font-size: 10px;
+}
+.delete-work-button {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #a8b2ac;
+}
+.delete-work-button:hover { background: #fff0ed; color: var(--coral); }
+.delete-work-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
 }
 .work-summary {
   display: -webkit-box;

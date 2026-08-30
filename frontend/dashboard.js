@@ -42,13 +42,38 @@ function renderWorks(works) {
     <article class="work-card">
       <div class="work-card-top">
         <h3 class="work-title">${escapeHtml(work.title)}</h3>
-        ${work.category ? `<span class="work-category">${escapeHtml(work.category)}</span>` : ""}
+        <div class="work-actions">
+          ${work.category ? `<span class="work-category">${escapeHtml(work.category)}</span>` : ""}
+          <button class="delete-work-button" type="button" data-work-id="${work.id}" data-work-title="${escapeHtml(work.title)}" aria-label="删除 ${escapeHtml(work.title)}" title="删除作品">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+          </button>
+        </div>
       </div>
       <p class="work-summary">${escapeHtml(work.summary || "还没有简介，先从第一章开始吧。")}</p>
       <div class="work-meta">最近编辑 · ${formatDate(work.updated_at)}</div>
     </article>
   `).join("");
   emptyState.classList.toggle("hidden", filtered.length !== 0);
+  workGrid.querySelectorAll(".delete-work-button").forEach((button) => {
+    button.addEventListener("click", () => deleteWork(button.dataset.workId, button.dataset.workTitle));
+  });
+}
+
+async function deleteWork(workId, workTitle) {
+  if (!window.confirm(`确定删除《${workTitle}》吗？作品中的章节也会被删除。`)) return;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/works/${workId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || "删除作品失败。");
+    }
+    await loadWorks();
+  } catch (error) {
+    showError(error.message);
+  }
 }
 
 function escapeHtml(value) {

@@ -311,6 +311,21 @@ async def list_works(
     return [WorkResponse(**dict(row)) for row in rows]
 
 
+@app.delete("/api/works/{work_id}", status_code=204)
+async def delete_work(
+    work_id: UUID,
+    current_user: UserResponse = Depends(get_current_user),
+) -> None:
+    async with app.state.db_pool.acquire() as connection:
+        deleted = await connection.execute(
+            "DELETE FROM works WHERE id = $1 AND user_id = $2",
+            work_id,
+            current_user.id,
+        )
+    if deleted == "DELETE 0":
+        raise HTTPException(status_code=404, detail="作品不存在")
+
+
 async def ensure_owned_work(connection: asyncpg.Connection, work_id: UUID, user_id: UUID) -> None:
     work_exists = await connection.fetchval(
         "SELECT 1 FROM works WHERE id = $1 AND user_id = $2",
