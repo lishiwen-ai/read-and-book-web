@@ -55,6 +55,14 @@ const worldFactions = document.querySelector("#world-factions");
 const worldRules = document.querySelector("#world-rules");
 const worldSpecial = document.querySelector("#world-special");
 const worldMessage = document.querySelector("#world-message");
+const aiToggle = document.querySelector("#ai-toggle");
+const aiPanel = document.querySelector("#ai-panel");
+const aiClose = document.querySelector("#ai-close");
+const aiMode = document.querySelector("#ai-mode");
+const aiMessages = document.querySelector("#ai-messages");
+const aiForm = document.querySelector("#ai-form");
+const aiInput = document.querySelector("#ai-input");
+const aiSend = document.querySelector("#ai-send");
 let chapters = [];
 let activeChapter = null;
 let characters = [];
@@ -64,6 +72,8 @@ let saveInFlight = false;
 let pendingConfirmation = null;
 let worldSaveTimer = null;
 let worldSaveInFlight = false;
+let aiConversationId = localStorage.getItem(`ai_conversation_${workId}`) || "";
+let lastAiAnswer = "";
 
 if (!token || !user || !workId) window.location.href = "./dashboard.html";
 
@@ -168,6 +178,91 @@ function selectChapter(chapterId) {
 
 function escapeHtml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+}
+
+function toggleAiPanel(open) {
+  aiPanel.classList.toggle("hidden", !open);
+  aiToggle.setAttribute("aria-expanded", String(open));
+  if (open) aiInput.focus();
+}
+
+function appendAiMessage(role, text, insertable = false) {
+  const message = document.createElement("div");
+  message.className = `ai-message ${role}`;
+  const copy = document.createElement("p");
+  copy.textContent = text;
+  message.append(copy);
+  if (insertable) {
+    const insertButton = document.createElement("button");
+    insertButton.className = "ai-insert";
+    insertButton.type = "button";
+    insertButton.textContent = "插入正文";
+    insertButton.addEventListener("click", () => {
+      const currentContent = chapterContent.value.trimEnd();
+      chapterContent.value = currentContent ? `${currentContent}\n\n${text}` : text;
+      updateWordCount();
+      scheduleAutoSave();
+      insertButton.textContent = "已插入";
+      insertButton.disabled = true;
+    });
+    message.append(insertButton);
+  }
+  aiMessages.append(message);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+function buildAiPrompt(request) {
+  const chapter = activeChapter
+    ? `当前章节：${chapterTitle.value.trim() || activeChapter.title}\n章节正文：${chapterContent.value.slice(-5000)}`
+    : "当前还没有章节。";
+  const cast = characters.length
+    ? characters.map((character) => `${character.name}（${character.occupation || "身份未定"}）：${character.personality || "性格未定"}`).join("\n").slice(0, 2400)
+    : "暂无人物设定。";
+  const setting = [
+    `时代背景：${worldEra.value}`,
+    `地理环境：${worldGeography.value}`,
+    `势力 / 组织：${worldFactions.value}`,
+    `规则 / 制度：${worldRules.value}`,
+    `特殊设定：${worldSpecial.value}`,
+  ].join("\n").slice(0, 2400);
+  return [
+    `你是这部作品的中文创作助手。当前任务是：${aiMode.value}。`,
+    "请严格参考以下作品上下文，保持人物性格、世界观规则和叙事语气一致。",
+    chapter,
+    `人物设定：\n${cast}`,
+    `世界观设定：\n${setting}`,
+    `作者要求：${request}`,
+  ].join("\n\n").slice(0, 9800);
+}
+
+async function sendAiRequest(request) {
+  appendAiMessage("user", request);
+  aiInput.value = "";
+  aiSend.disabled = true;
+  aiSend.querySelector("span").textContent = "思考中...";
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/ai/chat`, {
+      method: "POST",
+      headers: { ...headers(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: aiMode.value,
+        message: buildAiPrompt(request),
+        conversation_id: aiConversationId,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "AI 暂时无法回应。");
+    aiConversationId = data.conversation_id || aiConversationId;
+    if (aiConversationId) localStorage.setItem(`ai_conversation_${workId}`, aiConversationId);
+    lastAiAnswer = data.answer || "AI 没有返回内容。";
+    appendAiMessage("assistant", lastAiAnswer, true);
+  } catch (error) {
+    appendAiMessage("assistant error", error.message);
+  } finally {
+    aiSend.disabled = false;
+    aiSend.querySelector("span").textContent = "发送";
+    aiInput.focus();
+  }
 }
 
 async function loadWork() {
@@ -350,6 +445,20 @@ worldForm.addEventListener("submit", (event) => {
   saveWorldSettings(false);
 });
 worldForm.querySelectorAll("textarea").forEach((field) => field.addEventListener("input", scheduleWorldAutoSave));
+
+aiToggle.addEventListener("click", () => toggleAiPanel(aiPanel.classList.contains("hidden")));
+aiClose.addEventListener("click", () => toggleAiPanel(false));
+aiForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const request = aiInput.value.trim();
+  if (request) sendAiRequest(request);
+});
+aiInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    aiForm.requestSubmit();
+  }
+});
 
 function requestConfirmation(title, copy) {
   confirmTitle.textContent = title;

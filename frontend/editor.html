@@ -15,6 +15,10 @@
       </div>
       <div class="editor-user">
         <span id="save-status">未保存</span>
+        <button id="ai-toggle" class="ai-toggle" type="button" title="打开 AI 创作助手" aria-label="打开 AI 创作助手" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"></path><circle cx="12" cy="12" r="3.5"></circle></svg>
+          <span>AI 助手</span>
+        </button>
         <button id="logout-button" type="button" title="退出登录" aria-label="退出登录">退出</button>
       </div>
     </header>
@@ -121,6 +125,41 @@
         </form>
       </section>
     </main>
+    <aside class="ai-panel hidden" id="ai-panel" aria-label="AI 创作助手">
+      <div class="ai-panel-heading">
+        <div>
+          <p class="eyebrow">WRITING PARTNER</p>
+          <h2>AI 创作助手</h2>
+        </div>
+        <button class="dialog-close" id="ai-close" type="button" aria-label="关闭 AI 助手">×</button>
+      </div>
+      <div class="ai-settings">
+        <label>
+          <span>创作任务</span>
+          <select id="ai-mode">
+            <option value="续写">续写</option>
+            <option value="润色">润色</option>
+            <option value="情节梳理">情节梳理</option>
+            <option value="人物分析">人物分析</option>
+            <option value="世界观检查">世界观检查</option>
+          </select>
+        </label>
+        <span class="ai-context">将参考当前章节、人物和世界观</span>
+      </div>
+      <div class="ai-messages" id="ai-messages" aria-live="polite">
+        <div class="ai-message assistant">我会结合这部作品已有的设定协助你。告诉我想继续写什么，或者把一个模糊的想法交给我。</div>
+      </div>
+      <form class="ai-composer" id="ai-form">
+        <textarea id="ai-input" maxlength="8000" placeholder="例如：让这一章在雨夜结束，并留下一个悬念。"></textarea>
+        <div class="ai-composer-footer">
+          <span>Ctrl + Enter 发送</span>
+          <button class="editor-action save-button" id="ai-send" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 16-8-4 16-4-6-8-2Z"></path><path d="m12 14 4-6"></path></svg>
+            <span>发送</span>
+          </button>
+        </div>
+      </form>
+    </aside>
     <dialog class="confirm-dialog" id="confirm-dialog">
       <div class="confirm-content">
         <p class="eyebrow">CONFIRM DELETE</p>

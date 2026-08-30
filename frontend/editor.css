@@ -16,6 +16,8 @@ a { color:inherit; text-decoration:none; }
 .editor-user { display:flex; align-items:center; justify-content:flex-end; gap:18px; color:var(--muted); font-size:11px; }
 .editor-user button { border:0; background:transparent; color:var(--muted); font-size:12px; }
 .editor-user button:hover { color:var(--coral); }
+.ai-toggle { display:inline-flex; align-items:center; gap:6px; color:var(--teal) !important; }
+.ai-toggle svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.6; }
 .editor-layout { display:grid; min-height:calc(100vh - 70px); grid-template-columns:300px 1fr; }
 .chapter-sidebar { border-right:1px solid var(--line); padding:42px 27px; background:var(--wash); }
 .editor-tabs { display:flex; gap:17px; margin-bottom:32px; border-bottom:1px solid var(--line); }
@@ -93,4 +95,27 @@ a { color:inherit; text-decoration:none; }
 .save-button { border-color:var(--teal); background:var(--teal); color:#fff; }
 .save-button:hover { border-color:#155f5b; background:#155f5b; }
 .save-button:disabled { cursor:wait; opacity:.6; }
+.ai-panel { position:fixed; z-index:5; top:70px; right:0; bottom:0; display:flex; width:min(430px,100vw); flex-direction:column; border-left:1px solid var(--line); background:#fff; box-shadow:-18px 0 45px rgba(18,35,31,.1); }
+.ai-panel-heading { display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding:28px 26px 22px; }
+.ai-panel-heading h2 { margin:8px 0 0; font-family:"Noto Serif SC",serif; font-size:24px; }
+.ai-settings { display:flex; align-items:flex-end; justify-content:space-between; gap:15px; border-bottom:1px solid var(--line); padding:18px 26px; }
+.ai-settings label { display:flex; flex:1; flex-direction:column; gap:7px; }
+.ai-settings label span { color:#596760; font-size:11px; font-weight:600; }
+.ai-settings select { border:1px solid var(--line); border-radius:3px; outline:0; padding:9px 10px; background:#fff; color:var(--ink); font-size:12px; }
+.ai-settings select:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(29,119,114,.1); }
+.ai-context { max-width:145px; color:var(--muted); font-size:10px; line-height:1.6; }
+.ai-messages { display:flex; flex:1; flex-direction:column; gap:14px; overflow:auto; padding:22px 26px; background:#fbfcfb; }
+.ai-message { max-width:92%; border-radius:4px; padding:12px 14px; color:#3d4a45; font-size:13px; line-height:1.7; white-space:pre-wrap; }
+.ai-message p { margin:0; }
+.ai-message.assistant { align-self:flex-start; border:1px solid var(--line); background:#fff; }
+.ai-message.user { align-self:flex-end; background:#e8f2ef; color:#245650; }
+.ai-message.error { border-color:#e6c5bf; background:#fff3f0; color:var(--coral); }
+.ai-insert { margin-top:10px; border:0; background:transparent; color:var(--teal); cursor:pointer; font-size:11px; font-weight:600; padding:0; }
+.ai-insert:disabled { color:var(--muted); cursor:default; }
+.ai-composer { border-top:1px solid var(--line); padding:18px 26px 22px; }
+.ai-composer textarea { width:100%; min-height:90px; resize:vertical; border:1px solid var(--line); border-radius:3px; outline:0; padding:11px; color:var(--ink); font-size:13px; line-height:1.6; }
+.ai-composer textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(29,119,114,.1); }
+.ai-composer-footer { display:flex; align-items:center; justify-content:space-between; padding-top:10px; color:var(--muted); font-size:10px; }
+.ai-composer-footer .editor-action { min-width:78px; }
+@media (max-width:700px) { .ai-panel { top:57px; } .ai-toggle span { display:none; } .ai-panel-heading,.ai-settings,.ai-messages,.ai-composer { padding-right:20px; padding-left:20px; } .ai-settings { align-items:stretch; flex-direction:column; } .ai-context { max-width:none; } }
 @media (max-width:700px) { .editor-topbar { grid-template-columns:1fr auto; } .editor-title { display:none; } .editor-layout { grid-template-columns:1fr; } .chapter-sidebar { border-right:0; border-bottom:1px solid var(--line); padding:25px 20px 18px; } .chapter-list { display:grid; max-height:150px; grid-template-columns:repeat(2,1fr); overflow:auto; } .writing-pane { padding:35px 20px 24px; } .character-pane,.world-pane { padding:35px 20px 24px; } .character-form,.world-form { grid-template-columns:1fr; } .character-form label.wide,.world-form label.wide { grid-column:auto; } .chapter-title { font-size:25px; } .chapter-tools { gap:8px; } .writing-pane textarea { min-height:55vh; font-size:16px; } }
