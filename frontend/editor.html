@@ -21,14 +21,23 @@
 
     <main class="editor-layout">
       <aside class="chapter-sidebar">
+        <div class="editor-tabs" role="tablist" aria-label="作品内容">
+          <button class="editor-tab active" id="chapters-tab" type="button" role="tab">章节</button>
+          <button class="editor-tab" id="characters-tab" type="button" role="tab">人物</button>
+        </div>
         <div class="sidebar-heading">
-          <div>
+          <div id="chapters-heading">
             <p class="eyebrow">CONTENTS</p>
             <h1>章节</h1>
+          </div>
+          <div id="characters-heading" class="hidden">
+            <p class="eyebrow">CAST</p>
+            <h1>人物</h1>
           </div>
           <button class="add-chapter" id="add-chapter" type="button" title="新建章节" aria-label="新建章节">+</button>
         </div>
         <div class="chapter-list" id="chapter-list"></div>
+        <div class="character-list hidden" id="character-list"></div>
         <p class="sidebar-message" id="sidebar-message"></p>
       </aside>
 
@@ -57,6 +66,32 @@
           </button>
         </div>
         <p class="editor-message" id="editor-message" role="status"></p>
+      </section>
+
+      <section class="character-pane hidden" id="character-pane">
+        <div class="character-pane-heading">
+          <div>
+            <p class="eyebrow">CHARACTER PROFILE</p>
+            <h2 id="character-form-title">新增人物</h2>
+          </div>
+          <button class="editor-action" id="cancel-character" type="button">取消</button>
+        </div>
+        <form id="character-form" class="character-form">
+          <label><span>姓名</span><input id="character-name" required maxlength="100" placeholder="例如：沈砚" /></label>
+          <label><span>身份 / 职业</span><input id="character-occupation" maxlength="100" placeholder="例如：边关谋士" /></label>
+          <label><span>性别</span><input id="character-gender" maxlength="30" placeholder="例如：男" /></label>
+          <label><span>年龄</span><input id="character-age" maxlength="30" placeholder="例如：二十七岁" /></label>
+          <label class="wide"><span>性格</span><textarea id="character-personality" maxlength="5000" placeholder="这个人物如何思考和行动？"></textarea></label>
+          <label class="wide"><span>外貌特征</span><textarea id="character-appearance" maxlength="5000" placeholder="留下几个最重要的视觉细节。"></textarea></label>
+          <label class="wide"><span>人物关系</span><textarea id="character-relationships" maxlength="5000" placeholder="与其他人物的关系、冲突或牵绊。"></textarea></label>
+          <label class="wide"><span>背景故事</span><textarea id="character-backstory" maxlength="10000" placeholder="他从哪里来？"></textarea></label>
+          <label class="wide"><span>备注</span><textarea id="character-notes" maxlength="5000" placeholder="其他需要记住的设定。"></textarea></label>
+          <p class="editor-message" id="character-message" role="status"></p>
+          <button class="editor-action save-button" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v6h8V4M8 20v-6h8v6"></path></svg>
+            <span>保存人物</span>
+          </button>
+        </form>
       </section>
     </main>
     <script src="./editor.js"></script>

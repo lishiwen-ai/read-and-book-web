@@ -87,6 +87,28 @@ class UpdateChapterRequest(BaseModel):
     status: str | None = Field(default=None, pattern=r"^(draft|writing|completed)$")
 
 
+class CreateCharacterRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    gender: str = Field(default="", max_length=30)
+    age: str = Field(default="", max_length=30)
+    occupation: str = Field(default="", max_length=100)
+    personality: str = Field(default="", max_length=5_000)
+    appearance: str = Field(default="", max_length=5_000)
+    relationships: str = Field(default="", max_length=5_000)
+    backstory: str = Field(default="", max_length=10_000)
+    notes: str = Field(default="", max_length=5_000)
+    position: int = Field(default=1, ge=1)
+
+
+class UpdateCharacterRequest(CreateCharacterRequest):
+    pass
+
+
+class CharacterResponse(CreateCharacterRequest):
+    id: UUID
+    work_id: UUID
+
+
 class ChapterResponse(BaseModel):
     id: UUID
     work_id: UUID
@@ -608,6 +630,115 @@ async def delete_chapter(
         )
     if deleted == "DELETE 0":
         raise HTTPException(status_code=404, detail="章节不存在")
+
+
+@app.get("/api/works/{work_id}/characters", response_model=list[CharacterResponse])
+async def list_characters(
+    work_id: UUID,
+    current_user: UserResponse = Depends(get_current_user),
+) -> list[CharacterResponse]:
+    async with app.state.db_pool.acquire() as connection:
+        await ensure_owned_work(connection, work_id, current_user.id)
+        rows = await connection.fetch(
+            """
+            SELECT id, work_id, name, gender, age, occupation, personality,
+                   appearance, relationships, backstory, notes, position
+            FROM characters
+            WHERE work_id = $1
+            ORDER BY position ASC, created_at ASC
+            """,
+            work_id,
+        )
+    return [CharacterResponse(**dict(row)) for row in rows]
+
+
+@app.post("/api/works/{work_id}/characters", response_model=CharacterResponse, status_code=201)
+async def create_character(
+    work_id: UUID,
+    request: CreateCharacterRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> CharacterResponse:
+    async with app.state.db_pool.acquire() as connection:
+        await ensure_owned_work(connection, work_id, current_user.id)
+        row = await connection.fetchrow(
+            """
+            INSERT INTO characters (
+                work_id, name, gender, age, occupation, personality,
+                appearance, relationships, backstory, notes, position
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            RETURNING id, work_id, name, gender, age, occupation, personality,
+                      appearance, relationships, backstory, notes, position
+            """,
+            work_id,
+            request.name,
+            request.gender,
+            request.age,
+            request.occupation,
+            request.personality,
+            request.appearance,
+            request.relationships,
+            request.backstory,
+            request.notes,
+            request.position,
+        )
+    return CharacterResponse(**dict(row))
+
+
+@app.patch("/api/characters/{character_id}", response_model=CharacterResponse)
+async def update_character(
+    character_id: UUID,
+    request: UpdateCharacterRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> CharacterResponse:
+    async with app.state.db_pool.acquire() as connection:
+        row = await connection.fetchrow(
+            """
+            UPDATE characters AS c
+            SET name = $1, gender = $2, age = $3, occupation = $4,
+                personality = $5, appearance = $6, relationships = $7,
+                backstory = $8, notes = $9, position = $10, updated_at = NOW()
+            FROM works AS w
+            WHERE c.id = $11 AND c.work_id = w.id AND w.user_id = $12
+            RETURNING c.id, c.work_id, c.name, c.gender, c.age, c.occupation,
+                      c.personality, c.appearance, c.relationships, c.backstory,
+                      c.notes, c.position
+            """,
+            request.name,
+            request.gender,
+            request.age,
+            request.occupation,
+            request.personality,
+            request.appearance,
+            request.relationships,
+            request.backstory,
+            request.notes,
+            request.position,
+            character_id,
+            current_user.id,
+        )
+    if row is None:
+        raise HTTPException(status_code=404, detail="人物设定不存在")
+    return CharacterResponse(**dict(row))
+
+
+@app.delete("/api/characters/{character_id}", status_code=204)
+async def delete_character(
+    character_id: UUID,
+    current_user: UserResponse = Depends(get_current_user),
+) -> None:
+    async with app.state.db_pool.acquire() as connection:
+        deleted = await connection.execute(
+            """
+            DELETE FROM characters AS c
+            USING works AS w
+            WHERE c.id = $1 AND c.work_id = w.id AND w.user_id = $2
+            """,
+            character_id,
+            current_user.id,
+        )
+    if deleted == "DELETE 0":
+        raise HTTPException(status_code=404, detail="人物设定不存在")
 
 
 @app.post("/api/ai/chat", response_model=ChatResponse)

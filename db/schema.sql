@@ -39,6 +39,26 @@ CREATE TABLE IF NOT EXISTS chapters (
 CREATE INDEX IF NOT EXISTS idx_chapters_work_position
     ON chapters(work_id, position);
 
+CREATE TABLE IF NOT EXISTS characters (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    work_id UUID NOT NULL REFERENCES works(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    gender VARCHAR(30) NOT NULL DEFAULT '',
+    age VARCHAR(30) NOT NULL DEFAULT '',
+    occupation VARCHAR(100) NOT NULL DEFAULT '',
+    personality TEXT NOT NULL DEFAULT '',
+    appearance TEXT NOT NULL DEFAULT '',
+    relationships TEXT NOT NULL DEFAULT '',
+    backstory TEXT NOT NULL DEFAULT '',
+    notes TEXT NOT NULL DEFAULT '',
+    position INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_characters_work_position
+    ON characters(work_id, position);
+
 CREATE TABLE IF NOT EXISTS notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

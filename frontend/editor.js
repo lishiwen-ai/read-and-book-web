@@ -14,8 +14,30 @@ const editorMessage = document.querySelector("#editor-message");
 const sidebarMessage = document.querySelector("#sidebar-message");
 const saveButton = document.querySelector("#save-chapter");
 const deleteButton = document.querySelector("#delete-chapter");
+const chaptersTab = document.querySelector("#chapters-tab");
+const charactersTab = document.querySelector("#characters-tab");
+const chaptersHeading = document.querySelector("#chapters-heading");
+const charactersHeading = document.querySelector("#characters-heading");
+const characterList = document.querySelector("#character-list");
+const writingPane = document.querySelector(".writing-pane");
+const characterPane = document.querySelector("#character-pane");
+const characterForm = document.querySelector("#character-form");
+const characterFormTitle = document.querySelector("#character-form-title");
+const characterMessage = document.querySelector("#character-message");
+const cancelCharacter = document.querySelector("#cancel-character");
+const characterName = document.querySelector("#character-name");
+const characterOccupation = document.querySelector("#character-occupation");
+const characterGender = document.querySelector("#character-gender");
+const characterAge = document.querySelector("#character-age");
+const characterPersonality = document.querySelector("#character-personality");
+const characterAppearance = document.querySelector("#character-appearance");
+const characterRelationships = document.querySelector("#character-relationships");
+const characterBackstory = document.querySelector("#character-backstory");
+const characterNotes = document.querySelector("#character-notes");
 let chapters = [];
 let activeChapter = null;
+let characters = [];
+let activeCharacter = null;
 let autoSaveTimer = null;
 let saveInFlight = false;
 
@@ -33,6 +55,62 @@ function setEditorAvailability(enabled) {
   chapterStatus.disabled = !enabled;
   saveButton.disabled = !enabled;
   deleteButton.disabled = !enabled;
+}
+
+function setEditorMode(mode) {
+  const charactersMode = mode === "characters";
+  chaptersTab.classList.toggle("active", !charactersMode);
+  charactersTab.classList.toggle("active", charactersMode);
+  chaptersHeading.classList.toggle("hidden", charactersMode);
+  charactersHeading.classList.toggle("hidden", !charactersMode);
+  chapterList.classList.toggle("hidden", charactersMode);
+  characterList.classList.toggle("hidden", !charactersMode);
+  addChapter.classList.toggle("hidden", charactersMode);
+  writingPane.classList.toggle("hidden", charactersMode);
+  characterPane.classList.toggle("hidden", !charactersMode);
+}
+
+function clearCharacterForm() {
+  activeCharacter = null;
+  characterForm.reset();
+  characterFormTitle.textContent = "新增人物";
+  characterMessage.textContent = "";
+}
+
+function fillCharacterForm(character) {
+  activeCharacter = character;
+  characterFormTitle.textContent = "编辑人物";
+  characterName.value = character.name;
+  characterOccupation.value = character.occupation;
+  characterGender.value = character.gender;
+  characterAge.value = character.age;
+  characterPersonality.value = character.personality;
+  characterAppearance.value = character.appearance;
+  characterRelationships.value = character.relationships;
+  characterBackstory.value = character.backstory;
+  characterNotes.value = character.notes;
+  characterMessage.textContent = "";
+}
+
+function renderCharacters() {
+  characterList.innerHTML = characters.map((character) => `
+    <div class="character-card ${activeCharacter?.id === character.id ? "active" : ""}">
+      <button type="button" data-character-id="${character.id}">
+        <strong>${escapeHtml(character.name)}</strong>
+        <small>${escapeHtml(character.occupation || "未填写身份")}</small>
+      </button>
+      <button class="character-delete" type="button" data-delete-character-id="${character.id}" aria-label="删除 ${escapeHtml(character.name)}" title="删除人物">×</button>
+    </div>
+  `).join("");
+  characterList.querySelectorAll("[data-character-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      fillCharacterForm(characters.find((character) => character.id === button.dataset.characterId));
+      renderCharacters();
+    });
+  });
+  characterList.querySelectorAll("[data-delete-character-id]").forEach((button) => {
+    button.addEventListener("click", () => deleteCharacter(button.dataset.deleteCharacterId));
+  });
 }
 
 function renderChapters() {
@@ -84,7 +162,14 @@ async function loadWork() {
     setEditorAvailability(false);
     updateWordCount();
   }
+  const charactersResponse = await fetch(`${API_BASE_URL}/api/works/${workId}/characters`, { headers: headers() });
+  if (!charactersResponse.ok) throw new Error("无法读取人物设定。");
+  characters = await charactersResponse.json();
+  renderCharacters();
+  setEditorMode("chapters");
 }
+
+const addChapter = document.querySelector("#add-chapter");
 
 document.querySelector("#add-chapter").addEventListener("click", async () => {
   const title = window.prompt("请输入章节标题", `第${chapters.length + 1}章`);
@@ -100,6 +185,70 @@ document.querySelector("#add-chapter").addEventListener("click", async () => {
     selectChapter(data.id);
   } catch (error) { showMessage(sidebarMessage, error.message); }
 });
+
+chaptersTab.addEventListener("click", () => setEditorMode("chapters"));
+charactersTab.addEventListener("click", () => {
+  clearCharacterForm();
+  setEditorMode("characters");
+});
+cancelCharacter.addEventListener("click", clearCharacterForm);
+
+characterForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const payload = {
+    name: characterName.value.trim(),
+    occupation: characterOccupation.value.trim(),
+    gender: characterGender.value.trim(),
+    age: characterAge.value.trim(),
+    personality: characterPersonality.value.trim(),
+    appearance: characterAppearance.value.trim(),
+    relationships: characterRelationships.value.trim(),
+    backstory: characterBackstory.value.trim(),
+    notes: characterNotes.value.trim(),
+    position: activeCharacter?.position || characters.length + 1,
+  };
+  if (!payload.name) return;
+  const method = activeCharacter ? "PATCH" : "POST";
+  const url = activeCharacter
+    ? `${API_BASE_URL}/api/characters/${activeCharacter.id}`
+    : `${API_BASE_URL}/api/works/${workId}/characters`;
+  try {
+    const response = await fetch(url, {
+      method,
+      headers: { ...headers(), "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "保存人物失败。");
+    if (activeCharacter) {
+      characters = characters.map((character) => character.id === data.id ? data : character);
+    } else {
+      characters.push(data);
+    }
+    fillCharacterForm(data);
+    renderCharacters();
+    characterMessage.textContent = "保存成功";
+  } catch (error) {
+    characterMessage.textContent = error.message;
+  }
+});
+
+async function deleteCharacter(characterId) {
+  const character = characters.find((item) => item.id === characterId);
+  if (!character || !window.confirm(`确定删除人物“${character.name}”吗？`)) return;
+  const response = await fetch(`${API_BASE_URL}/api/characters/${characterId}`, {
+    method: "DELETE",
+    headers: headers(),
+  });
+  if (!response.ok) {
+    characterMessage.textContent = "删除人物失败。";
+    return;
+  }
+  characters = characters.filter((item) => item.id !== characterId);
+  clearCharacterForm();
+  renderCharacters();
+}
+
 
 async function saveChapter(isAutoSave = false) {
   if (!activeChapter) return;
