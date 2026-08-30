@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>注册 · 书写与阅读</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="brand-panel" aria-label="产品介绍">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </div>
+        <div class="brand-copy">
+          <p class="eyebrow">BOOK & WRITE</p>
+          <h1>让知识成为<br /><em>写作的回声。</em></h1>
+          <p class="brand-description">
+            在历史的纵深里阅读，在自己的故事里落笔。
+          </p>
+        </div>
+        <div class="brand-foot">
+          <span class="line"></span>
+          <span>AI 驱动的创作与历史学习平台</span>
+        </div>
+        <div class="orbit orbit-one" aria-hidden="true"></div>
+        <div class="orbit orbit-two" aria-hidden="true"></div>
+      </section>
+
+      <section class="form-panel">
+        <div class="form-wrap">
+          <div class="form-heading">
+            <p class="eyebrow">WELCOME IN</p>
+            <h2>创建你的账号</h2>
+            <p>从一页空白开始，建立属于你的创作空间。</p>
+          </div>
+
+          <form id="register-form" novalidate>
+            <label class="field">
+              <span>昵称</span>
+              <input
+                id="nickname"
+                name="nickname"
+                type="text"
+                autocomplete="username"
+                placeholder="例如：李小明"
+                minlength="2"
+                maxlength="20"
+                required
+              />
+              <small class="field-hint">2-20 个中文、英文、数字或下划线</small>
+            </label>
+
+            <label class="field">
+              <span>密码</span>
+              <div class="password-wrap">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="至少 6 位字符"
+                  minlength="6"
+                  maxlength="72"
+                  required
+                />
+                <button class="icon-button" id="toggle-password" type="button" aria-label="显示密码">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                    <circle cx="12" cy="12" r="2.5"></circle>
+                  </svg>
+                </button>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>确认密码</span>
+              <input
+                id="confirm-password"
+                name="confirm-password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="再次输入密码"
+                required
+              />
+            </label>
+
+            <label class="consent">
+              <input id="terms" type="checkbox" required />
+              <span class="checkmark" aria-hidden="true"></span>
+              <span>我同意平台的服务条款与隐私政策</span>
+            </label>
+
+            <p id="form-message" class="form-message" role="status"></p>
+
+            <button class="submit-button" type="submit">
+              <span>创建账号</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h13M13 6l6 6-6 6"></path>
+              </svg>
+            </button>
+          </form>
+
+          <p class="switch-auth">已经有账号？ <button type="button" id="login-link">直接登录</button></p>
+        </div>
+        <span class="page-number" aria-hidden="true">01 / 04</span>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
