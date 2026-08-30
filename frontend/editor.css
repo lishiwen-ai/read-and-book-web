@@ -73,6 +73,12 @@ a { color:inherit; text-decoration:none; }
 .secondary-button:hover { border-color:#b8c9c1; color:var(--ink); }
 .danger-button { border:1px solid var(--coral); background:var(--coral); color:#fff; }
 .danger-button:hover { background:#a94033; }
+.chapter-dialog { width:min(440px,calc(100% - 32px)); border:0; border-radius:4px; padding:0; box-shadow:0 20px 80px rgba(18,35,31,.2); }
+.chapter-dialog::backdrop { background:rgba(16,30,27,.32); }
+.chapter-dialog form { position:relative; padding:34px; }
+.chapter-dialog h2 { font-size:27px; }
+.dialog-close { position:absolute; top:16px; right:18px; border:0; background:transparent; color:var(--muted); font-size:24px; line-height:1; }
+.dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
 .writing-footer { display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:18px; color:#a0aba5; font-size:11px; }
 .save-button { border-color:var(--teal); background:var(--teal); color:#fff; }
 .save-button:hover { border-color:#155f5b; background:#155f5b; }

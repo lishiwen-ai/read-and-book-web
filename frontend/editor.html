@@ -105,6 +105,26 @@
         </div>
       </div>
     </dialog>
+    <dialog class="chapter-dialog" id="chapter-dialog">
+      <form id="chapter-form">
+        <button class="dialog-close" id="cancel-chapter-dialog" type="button" aria-label="关闭">×</button>
+        <p class="eyebrow">NEW CHAPTER</p>
+        <h2>创建第一章</h2>
+        <p class="dialog-copy">给这一章留下一个名字，正文可以稍后继续。</p>
+        <label class="dialog-field">
+          <span>章节标题</span>
+          <input id="new-chapter-title" type="text" maxlength="200" placeholder="例如：第一章 雁门驿" required />
+        </label>
+        <p class="editor-message" id="chapter-dialog-message" role="status"></p>
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancel-chapter-button" type="button">取消</button>
+          <button class="editor-action save-button" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+            <span>创建章节</span>
+          </button>
+        </div>
+      </form>
+    </dialog>
     <script src="./editor.js"></script>
   </body>
 </html>

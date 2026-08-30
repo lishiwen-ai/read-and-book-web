@@ -39,6 +39,12 @@ const confirmTitle = document.querySelector("#confirm-title");
 const confirmCopy = document.querySelector("#confirm-copy");
 const cancelConfirm = document.querySelector("#cancel-confirm");
 const acceptConfirm = document.querySelector("#accept-confirm");
+const chapterDialog = document.querySelector("#chapter-dialog");
+const chapterForm = document.querySelector("#chapter-form");
+const newChapterTitle = document.querySelector("#new-chapter-title");
+const chapterDialogMessage = document.querySelector("#chapter-dialog-message");
+const cancelChapterDialog = document.querySelector("#cancel-chapter-dialog");
+const cancelChapterButton = document.querySelector("#cancel-chapter-button");
 let chapters = [];
 let activeChapter = null;
 let characters = [];
@@ -177,9 +183,26 @@ async function loadWork() {
 
 const addChapter = document.querySelector("#add-chapter");
 
-document.querySelector("#add-chapter").addEventListener("click", async () => {
-  const title = window.prompt("请输入章节标题", `第${chapters.length + 1}章`);
-  if (!title?.trim()) return;
+document.querySelector("#add-chapter").addEventListener("click", () => {
+  newChapterTitle.value = `第${chapters.length + 1}章`;
+  chapterDialogMessage.textContent = "";
+  chapterDialog.showModal();
+  newChapterTitle.focus();
+});
+
+function closeChapterDialog() {
+  chapterDialog.close();
+}
+
+cancelChapterDialog.addEventListener("click", closeChapterDialog);
+cancelChapterButton.addEventListener("click", closeChapterDialog);
+chapterDialog.addEventListener("cancel", closeChapterDialog);
+
+chapterForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const title = newChapterTitle.value.trim();
+  if (!title) return;
+  chapterDialogMessage.textContent = "";
   try {
     const response = await fetch(`${API_BASE_URL}/api/works/${workId}/chapters`, {
       method: "POST", headers: { ...headers(), "Content-Type": "application/json" },
@@ -187,9 +210,10 @@ document.querySelector("#add-chapter").addEventListener("click", async () => {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || "创建章节失败。");
+    closeChapterDialog();
     chapters.push(data);
     selectChapter(data.id);
-  } catch (error) { showMessage(sidebarMessage, error.message); }
+  } catch (error) { chapterDialogMessage.textContent = error.message; }
 });
 
 chaptersTab.addEventListener("click", () => setEditorMode("chapters"));
