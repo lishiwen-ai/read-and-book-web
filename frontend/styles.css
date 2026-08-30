@@ -192,6 +192,10 @@ h1 em {
   width: min(100%, 430px);
 }
 
+.hidden {
+  display: none !important;
+}
+
 .form-heading {
   margin-bottom: 38px;
 }

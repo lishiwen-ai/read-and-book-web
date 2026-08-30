@@ -30,14 +30,20 @@
 
       <section class="form-panel">
         <div class="form-wrap">
-          <div class="form-heading">
+          <div class="form-heading" id="register-heading">
             <p class="eyebrow">WELCOME IN</p>
             <h2>创建你的账号</h2>
             <p>从一页空白开始，建立属于你的创作空间。</p>
           </div>
 
+          <div class="form-heading hidden" id="login-heading">
+            <p class="eyebrow">WELCOME BACK</p>
+            <h2>回到你的空间</h2>
+            <p>继续上一次创作，或重新打开一段阅读。</p>
+          </div>
+
           <form id="register-form" novalidate>
-            <label class="field">
+            <label class="field register-only">
               <span>昵称</span>
               <input
                 id="nickname"
@@ -86,7 +92,7 @@
               />
             </label>
 
-            <label class="consent">
+            <label class="consent register-only">
               <input id="terms" type="checkbox" required />
               <span class="checkmark" aria-hidden="true"></span>
               <span>我同意平台的服务条款与隐私政策</span>
@@ -95,14 +101,15 @@
             <p id="form-message" class="form-message" role="status"></p>
 
             <button class="submit-button" type="submit">
-              <span>创建账号</span>
+              <span id="submit-label">创建账号</span>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M5 12h13M13 6l6 6-6 6"></path>
               </svg>
             </button>
           </form>
 
-          <p class="switch-auth">已经有账号？ <button type="button" id="login-link">直接登录</button></p>
+          <p class="switch-auth" id="register-switch">已经有账号？ <button type="button" id="login-link">直接登录</button></p>
+          <p class="switch-auth hidden" id="login-switch">还没有账号？ <button type="button" id="register-link">创建账号</button></p>
         </div>
         <span class="page-number" aria-hidden="true">01 / 04</span>
       </section>

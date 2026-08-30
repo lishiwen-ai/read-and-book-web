@@ -5,10 +5,18 @@ const confirmPasswordInput = document.querySelector("#confirm-password");
 const termsInput = document.querySelector("#terms");
 const message = document.querySelector("#form-message");
 const submitButton = document.querySelector(".submit-button");
+const submitLabel = document.querySelector("#submit-label");
 const togglePassword = document.querySelector("#toggle-password");
 const loginLink = document.querySelector("#login-link");
+const registerLink = document.querySelector("#register-link");
+const registerHeading = document.querySelector("#register-heading");
+const loginHeading = document.querySelector("#login-heading");
+const registerOnlyFields = document.querySelectorAll(".register-only");
+const registerSwitch = document.querySelector("#register-switch");
+const loginSwitch = document.querySelector("#login-switch");
 
 const API_BASE_URL = "http://127.0.0.1:8000";
+let isLoginMode = false;
 
 function setMessage(text, isSuccess = false) {
   message.textContent = text;
@@ -27,8 +35,25 @@ togglePassword.addEventListener("click", () => {
 });
 
 loginLink.addEventListener("click", () => {
-  setMessage("登录页面将在下一步接入。");
+  setAuthMode(true);
 });
+
+registerLink.addEventListener("click", () => {
+  setAuthMode(false);
+});
+
+function setAuthMode(loginMode) {
+  isLoginMode = loginMode;
+  registerHeading.classList.toggle("hidden", loginMode);
+  loginHeading.classList.toggle("hidden", !loginMode);
+  registerOnlyFields.forEach((field) => field.classList.toggle("hidden", loginMode));
+  registerSwitch.classList.toggle("hidden", loginMode);
+  loginSwitch.classList.toggle("hidden", !loginMode);
+  submitLabel.textContent = loginMode ? "登录" : "创建账号";
+  setMessage("");
+  form.reset();
+  nicknameInput.focus();
+}
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -45,7 +70,7 @@ form.addEventListener("submit", async (event) => {
 
   markInvalid(nicknameInput, nicknameInvalid);
   markInvalid(passwordInput, passwordInvalid);
-  markInvalid(confirmPasswordInput, confirmInvalid);
+  markInvalid(confirmPasswordInput, !isLoginMode && confirmInvalid);
 
   if (nicknameInvalid) {
     setMessage("请填写 2-20 个中文、英文、数字或下划线组成的昵称。");
@@ -57,12 +82,12 @@ form.addEventListener("submit", async (event) => {
     passwordInput.focus();
     return;
   }
-  if (confirmInvalid) {
+  if (!isLoginMode && confirmInvalid) {
     setMessage("两次输入的密码不一致。");
     confirmPasswordInput.focus();
     return;
   }
-  if (!termsInput.checked) {
+  if (!isLoginMode && !termsInput.checked) {
     setMessage("请先同意服务条款与隐私政策。");
     return;
   }
@@ -71,7 +96,7 @@ form.addEventListener("submit", async (event) => {
   submitButton.querySelector("span").textContent = "正在创建...";
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/${isLoginMode ? "login" : "register"}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nickname, password }),
@@ -84,7 +109,7 @@ form.addEventListener("submit", async (event) => {
 
     localStorage.setItem("access_token", data.access_token);
     localStorage.setItem("current_user", JSON.stringify(data.user));
-    setMessage("账号创建成功，登录状态已保存。", true);
+    setMessage(isLoginMode ? "登录成功，欢迎回来。" : "账号创建成功，登录状态已保存。", true);
     form.reset();
   } catch (error) {
     setMessage(error.message || "暂时无法连接服务器。");
