@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>工作台 · 书写与阅读</title>
+    <link rel="stylesheet" href="./dashboard.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="./dashboard.html" aria-label="返回工作台">
+        <span class="wordmark-mark" aria-hidden="true"><i></i><i></i></span>
+        <span>BOOK & WRITE</span>
+      </a>
+      <nav class="topnav" aria-label="主导航">
+        <a class="active" href="./dashboard.html">工作台</a>
+        <a href="#" id="notes-link">随笔</a>
+        <a href="#" id="history-link">阅读历史</a>
+      </nav>
+      <div class="user-menu">
+        <span class="user-greeting" id="user-greeting">你好</span>
+        <button class="avatar" id="logout-button" type="button" aria-label="退出登录" title="退出登录">李</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="welcome-row">
+        <div>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+          <h1>今天，想写点什么？</h1>
+          <p class="welcome-copy">把灵感放在手边，把正在发生的故事继续下去。</p>
+        </div>
+        <button class="primary-button" id="new-work-button" type="button">
+          <span class="plus" aria-hidden="true">+</span>
+          新建作品
+        </button>
+      </section>
+
+      <section class="stats-row" aria-label="作品概览">
+        <div class="stat">
+          <span class="stat-label">我的作品</span>
+          <strong id="work-count">0</strong>
+        </div>
+        <div class="stat">
+          <span class="stat-label">最近编辑</span>
+          <strong id="latest-work">暂无</strong>
+        </div>
+        <div class="stat stat-accent">
+          <span class="stat-label">随笔灵感</span>
+          <strong id="note-count">即将开放</strong>
+        </div>
+      </section>
+
+      <section class="section-heading">
+        <div>
+          <p class="eyebrow">COLLECTION</p>
+          <h2>我的作品</h2>
+        </div>
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="work-search" type="search" placeholder="搜索作品" aria-label="搜索作品" />
+        </label>
+      </section>
+
+      <section class="work-grid" id="work-grid" aria-live="polite"></section>
+      <p class="empty-state hidden" id="empty-state">还没有作品，先建立一个故事吧。</p>
+      <p class="error-state hidden" id="error-state"></p>
+    </main>
+
+    <dialog class="work-dialog" id="work-dialog">
+      <form method="dialog" id="work-form">
+        <button class="close-button" value="cancel" type="submit" aria-label="关闭">×</button>
+        <p class="eyebrow">NEW WORK</p>
+        <h2>建立一部新作品</h2>
+        <p class="dialog-copy">先留下一个名字，故事会慢慢长出来。</p>
+        <label class="dialog-field">
+          <span>作品名称</span>
+          <input id="work-title" type="text" maxlength="200" placeholder="例如：雁门旧事" required />
+        </label>
+        <label class="dialog-field">
+          <span>分类 <small>可选</small></span>
+          <input id="work-category" type="text" maxlength="100" placeholder="例如：历史悬疑" />
+        </label>
+        <label class="dialog-field">
+          <span>作品简介 <small>可选</small></span>
+          <textarea id="work-summary" maxlength="5000" placeholder="用一两句话记下它的核心"></textarea>
+        </label>
+        <p class="dialog-message" id="dialog-message" role="status"></p>
+        <button class="primary-button full-button" id="create-work-submit" value="default" type="submit">创建作品</button>
+      </form>
+    </dialog>
+    <script src="./dashboard.js"></script>
+  </body>
+</html>

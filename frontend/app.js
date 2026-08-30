@@ -110,7 +110,7 @@ form.addEventListener("submit", async (event) => {
     localStorage.setItem("access_token", data.access_token);
     localStorage.setItem("current_user", JSON.stringify(data.user));
     setMessage(isLoginMode ? "登录成功，欢迎回来。" : "账号创建成功，登录状态已保存。", true);
-    form.reset();
+    window.location.href = "./dashboard.html";
   } catch (error) {
     setMessage(error.message || "暂时无法连接服务器。");
   } finally {
