@@ -41,6 +41,27 @@ uvicorn app.main:app --reload
 
 作品和章节接口已经按令牌中的用户 ID 隔离。不要再相信前端传入的 `user_id`，AI 接口也会自动使用当前登录用户。
 
+## 随笔接口
+
+随笔是全局灵感碎片箱，可关联零个或多个自己的作品：
+
+- `POST /api/notes`：创建随笔
+- `GET /api/notes`：查看随笔，支持 `tag`、`search`、`work_id` 筛选
+- `GET /api/notes/{note_id}`：查看详情
+- `PATCH /api/notes/{note_id}`：修改随笔和关联作品
+- `DELETE /api/notes/{note_id}`：删除随笔
+
+创建示例：
+
+```json
+{
+  "title": "雁门驿的铜牌",
+  "content": "沈砚发现铜牌背面刻着一个已经磨损的军号。",
+  "tags": ["灵感片段", "悬疑"],
+  "work_ids": []
+}
+```
+
 授权后，在 Swagger 页面展开 `POST /api/ai/chat`，点击 **Try it out**，填入：
 
 ```json
