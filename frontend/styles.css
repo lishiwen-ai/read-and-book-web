@@ -52,18 +52,6 @@ button {
   color: #f5f3e9;
 }
 
-.brand-panel::after {
-  position: absolute;
-  right: -7%;
-  bottom: -15%;
-  width: 64%;
-  height: 66%;
-  border: 1px solid rgba(214, 239, 226, 0.22);
-  border-radius: 50%;
-  content: "";
-  transform: rotate(-25deg);
-}
-
 .brand-mark {
   position: relative;
   display: flex;
@@ -72,6 +60,21 @@ button {
   align-items: flex-end;
   gap: 5px;
   z-index: 1;
+}
+
+.brand-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.brand-index {
+  color: #91aaa0;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
 }
 
 .brand-mark span {
@@ -97,15 +100,7 @@ button {
   max-width: 550px;
   margin-top: auto;
   margin-bottom: auto;
-  padding: 12vh 0 10vh;
-}
-
-.chapter-label {
-  margin: -7px 0 18px;
-  color: #9bbab0;
-  font-family: "Noto Serif SC", serif;
-  font-size: 13px;
-  letter-spacing: 0.08em;
+  padding: 12vh 0;
 }
 
 .eyebrow {
@@ -130,8 +125,8 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(42px, 5.1vw, 76px);
-  line-height: 1.22;
+  font-size: clamp(52px, 6.4vw, 92px);
+  line-height: 1.08;
 }
 
 h1 em {
@@ -139,38 +134,37 @@ h1 em {
   font-style: normal;
 }
 
-.brand-description {
-  max-width: 350px;
-  margin: 30px 0 0;
-  color: #bfd0ca;
-  font-size: 15px;
-  line-height: 2;
+.brand-rule {
+  display: block;
+  width: 76px;
+  height: 1px;
+  margin: 30px 0 19px;
+  background: #e9b25d;
 }
 
-.quote {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  max-width: 320px;
-  margin-top: 43px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(217, 232, 221, 0.24);
-}
-
-.quote-mark {
-  margin-top: -4px;
-  color: #e9b25d;
-  font-family: Georgia, serif;
-  font-size: 30px;
-  line-height: 1;
-}
-
-.quote p {
+.brand-note {
   margin: 0;
-  color: #d5e1d8;
-  font-family: "Noto Serif SC", serif;
-  font-size: 13px;
-  line-height: 1.8;
+  color: #a9beb5;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.grid-mark {
+  position: absolute;
+  right: 10%;
+  bottom: 15%;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  border: 1px solid rgba(217, 232, 221, 0.24);
+  transform: rotate(45deg);
+}
+
+.grid-mark span {
+  border: 1px solid rgba(217, 232, 221, 0.18);
 }
 
 .brand-foot {
@@ -433,20 +427,22 @@ h1 em {
   }
 
   .brand-copy {
-    padding: 33px 0 28px;
+    padding: 36px 0 28px;
   }
 
   .brand-copy h1 {
     font-size: 39px;
   }
 
-  .brand-description {
-    margin-top: 13px;
-    font-size: 13px;
+  .brand-note {
+    font-size: 9px;
   }
 
-  .quote {
-    display: none;
+  .grid-mark {
+    right: 9%;
+    bottom: 16%;
+    width: 67px;
+    height: 67px;
   }
 
   .brand-foot {
