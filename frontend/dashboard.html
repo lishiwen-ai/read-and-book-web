@@ -89,6 +89,17 @@
         <button class="primary-button full-button" id="create-work-submit" value="default" type="submit">创建作品</button>
       </form>
     </dialog>
+    <dialog class="confirm-dialog" id="delete-work-dialog">
+      <div class="confirm-content">
+        <p class="eyebrow">DELETE WORK</p>
+        <h2>删除这部作品？</h2>
+        <p class="dialog-copy" id="delete-work-copy"></p>
+        <div class="confirm-actions">
+          <button class="secondary-button" id="cancel-delete-work" type="button">取消</button>
+          <button class="danger-button" id="confirm-delete-work" type="button">删除作品</button>
+        </div>
+      </div>
+    </dialog>
     <script src="./dashboard.js"></script>
   </body>
 </html>

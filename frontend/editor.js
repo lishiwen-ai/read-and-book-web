@@ -34,12 +34,18 @@ const characterAppearance = document.querySelector("#character-appearance");
 const characterRelationships = document.querySelector("#character-relationships");
 const characterBackstory = document.querySelector("#character-backstory");
 const characterNotes = document.querySelector("#character-notes");
+const confirmDialog = document.querySelector("#confirm-dialog");
+const confirmTitle = document.querySelector("#confirm-title");
+const confirmCopy = document.querySelector("#confirm-copy");
+const cancelConfirm = document.querySelector("#cancel-confirm");
+const acceptConfirm = document.querySelector("#accept-confirm");
 let chapters = [];
 let activeChapter = null;
 let characters = [];
 let activeCharacter = null;
 let autoSaveTimer = null;
 let saveInFlight = false;
+let pendingConfirmation = null;
 
 if (!token || !user || !workId) window.location.href = "./dashboard.html";
 
@@ -235,7 +241,7 @@ characterForm.addEventListener("submit", async (event) => {
 
 async function deleteCharacter(characterId) {
   const character = characters.find((item) => item.id === characterId);
-  if (!character || !window.confirm(`确定删除人物“${character.name}”吗？`)) return;
+  if (!character || !(await requestConfirmation("删除这个人物？", `人物“${character.name}”的设定将被删除，此操作无法撤销。`))) return;
   const response = await fetch(`${API_BASE_URL}/api/characters/${characterId}`, {
     method: "DELETE",
     headers: headers(),
@@ -248,6 +254,25 @@ async function deleteCharacter(characterId) {
   clearCharacterForm();
   renderCharacters();
 }
+
+function requestConfirmation(title, copy) {
+  confirmTitle.textContent = title;
+  confirmCopy.textContent = copy;
+  confirmDialog.showModal();
+  return new Promise((resolve) => {
+    pendingConfirmation = resolve;
+  });
+}
+
+function finishConfirmation(confirmed) {
+  confirmDialog.close();
+  pendingConfirmation?.(confirmed);
+  pendingConfirmation = null;
+}
+
+cancelConfirm.addEventListener("click", () => finishConfirmation(false));
+acceptConfirm.addEventListener("click", () => finishConfirmation(true));
+confirmDialog.addEventListener("cancel", () => finishConfirmation(false));
 
 
 async function saveChapter(isAutoSave = false) {
@@ -287,7 +312,7 @@ function scheduleAutoSave() {
 saveButton.addEventListener("click", () => saveChapter(false));
 
 deleteButton.addEventListener("click", async () => {
-  if (!activeChapter || !window.confirm(`确定删除《${activeChapter.title}》吗？章节正文将一并删除。`)) return;
+  if (!activeChapter || !(await requestConfirmation("删除这一章？", `《${activeChapter.title}》的正文将一并删除，此操作无法撤销。`))) return;
   const response = await fetch(`${API_BASE_URL}/api/chapters/${activeChapter.id}`, { method: "DELETE", headers: headers() });
   if (!response.ok) { showMessage(editorMessage, "删除章节失败。"); return; }
   chapters = chapters.filter((chapter) => chapter.id !== activeChapter.id);

@@ -15,6 +15,11 @@ const dialog = document.querySelector("#work-dialog");
 const workForm = document.querySelector("#work-form");
 const dialogMessage = document.querySelector("#dialog-message");
 const createWorkSubmit = document.querySelector("#create-work-submit");
+const deleteWorkDialog = document.querySelector("#delete-work-dialog");
+const deleteWorkCopy = document.querySelector("#delete-work-copy");
+const cancelDeleteWork = document.querySelector("#cancel-delete-work");
+const confirmDeleteWork = document.querySelector("#confirm-delete-work");
+let pendingWorkDeletion = null;
 const closeDialogButton = document.querySelector("#close-work-dialog");
 
 if (!token || !currentUser) {
@@ -67,7 +72,8 @@ function renderWorks(works) {
 }
 
 async function deleteWork(workId, workTitle) {
-  if (!window.confirm(`确定删除《${workTitle}》吗？作品中的章节也会被删除。`)) return;
+  const confirmed = await requestWorkDeletion(workId, workTitle);
+  if (!confirmed) return;
   try {
     const response = await fetch(`${API_BASE_URL}/api/works/${workId}`, {
       method: "DELETE",
@@ -82,6 +88,25 @@ async function deleteWork(workId, workTitle) {
     showError(error.message);
   }
 }
+
+function requestWorkDeletion(workId, workTitle) {
+  pendingWorkDeletion = workId;
+  deleteWorkCopy.textContent = `《${workTitle}》以及其中的章节会被删除，此操作无法撤销。`;
+  deleteWorkDialog.showModal();
+  return new Promise((resolve) => {
+    deleteWorkDialog._resolveDeletion = resolve;
+  });
+}
+
+function finishWorkDeletion(confirmed) {
+  deleteWorkDialog.close();
+  deleteWorkDialog._resolveDeletion?.(confirmed && pendingWorkDeletion);
+  pendingWorkDeletion = null;
+}
+
+cancelDeleteWork.addEventListener("click", () => finishWorkDeletion(false));
+confirmDeleteWork.addEventListener("click", () => finishWorkDeletion(true));
+deleteWorkDialog.addEventListener("cancel", () => finishWorkDeletion(false));
 
 function escapeHtml(value) {
   return String(value)
