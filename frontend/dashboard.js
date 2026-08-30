@@ -14,6 +14,7 @@ const dialog = document.querySelector("#work-dialog");
 const workForm = document.querySelector("#work-form");
 const dialogMessage = document.querySelector("#dialog-message");
 const createWorkSubmit = document.querySelector("#create-work-submit");
+const closeDialogButton = document.querySelector("#close-work-dialog");
 
 if (!token || !currentUser) {
   window.location.href = "./index.html";
@@ -90,6 +91,14 @@ document.querySelector("#new-work-button").addEventListener("click", () => {
   dialogMessage.textContent = "";
   workForm.reset();
   dialog.showModal();
+});
+
+closeDialogButton.addEventListener("click", () => {
+  dialog.close();
+});
+
+dialog.addEventListener("cancel", () => {
+  dialog.close();
 });
 
 workForm.addEventListener("submit", async (event) => {
