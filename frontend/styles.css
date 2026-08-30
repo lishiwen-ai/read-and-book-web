@@ -48,9 +48,7 @@ button {
   justify-content: space-between;
   overflow: hidden;
   padding: 56px clamp(36px, 7vw, 112px) 46px;
-  background:
-    linear-gradient(145deg, rgba(22, 45, 42, 0.96), rgba(17, 35, 33, 0.98)),
-    var(--ink);
+  background: var(--ink);
   color: #f5f3e9;
 }
 
@@ -102,6 +100,14 @@ button {
   padding: 12vh 0 10vh;
 }
 
+.chapter-label {
+  margin: -7px 0 18px;
+  color: #9bbab0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
 .eyebrow {
   margin: 0 0 20px;
   color: var(--accent);
@@ -125,7 +131,7 @@ h2 {
 
 h1 {
   font-size: clamp(42px, 5.1vw, 76px);
-  line-height: 1.18;
+  line-height: 1.22;
 }
 
 h1 em {
@@ -134,11 +140,37 @@ h1 em {
 }
 
 .brand-description {
-  max-width: 300px;
+  max-width: 350px;
   margin: 30px 0 0;
   color: #bfd0ca;
   font-size: 15px;
-  line-height: 1.9;
+  line-height: 2;
+}
+
+.quote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 320px;
+  margin-top: 43px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(217, 232, 221, 0.24);
+}
+
+.quote-mark {
+  margin-top: -4px;
+  color: #e9b25d;
+  font-family: Georgia, serif;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.quote p {
+  margin: 0;
+  color: #d5e1d8;
+  font-family: "Noto Serif SC", serif;
+  font-size: 13px;
+  line-height: 1.8;
 }
 
 .brand-foot {
@@ -411,6 +443,10 @@ h1 em {
   .brand-description {
     margin-top: 13px;
     font-size: 13px;
+  }
+
+  .quote {
+    display: none;
   }
 
   .brand-foot {
