@@ -271,6 +271,23 @@ h2 { font-size: 26px; }
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+.open-work-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 15px 0 0;
+  background: transparent;
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+.open-work-button span { font-size: 18px; font-weight: 400; }
+.open-work-button:hover { color: var(--coral); }
 .work-meta {
   display: flex;
   align-items: center;

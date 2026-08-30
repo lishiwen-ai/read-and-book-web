@@ -50,6 +50,7 @@ function renderWorks(works) {
           </button>
         </div>
       </div>
+      <button class="open-work-button" type="button" data-work-id="${work.id}">打开作品 <span>→</span></button>
       <p class="work-summary">${escapeHtml(work.summary || "还没有简介，先从第一章开始吧。")}</p>
       <div class="work-meta">最近编辑 · ${formatDate(work.updated_at)}</div>
     </article>
@@ -57,6 +58,11 @@ function renderWorks(works) {
   emptyState.classList.toggle("hidden", filtered.length !== 0);
   workGrid.querySelectorAll(".delete-work-button").forEach((button) => {
     button.addEventListener("click", () => deleteWork(button.dataset.workId, button.dataset.workTitle));
+  });
+  workGrid.querySelectorAll(".open-work-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      window.location.href = `./editor.html?work_id=${encodeURIComponent(button.dataset.workId)}`;
+    });
   });
 }
 

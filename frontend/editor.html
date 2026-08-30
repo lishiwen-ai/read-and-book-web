@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>作品编辑器 · 书写与阅读</title>
+    <link rel="stylesheet" href="./editor.css" />
+  </head>
+  <body>
+    <header class="editor-topbar">
+      <a class="back-link" href="./dashboard.html" aria-label="返回工作台">← <span>工作台</span></a>
+      <div class="editor-title">
+        <span class="editor-kicker">WRITING DESK</span>
+        <strong id="work-title">加载中...</strong>
+      </div>
+      <div class="editor-user">
+        <span id="save-status">未保存</span>
+        <button id="logout-button" type="button" title="退出登录" aria-label="退出登录">退出</button>
+      </div>
+    </header>
+
+    <main class="editor-layout">
+      <aside class="chapter-sidebar">
+        <div class="sidebar-heading">
+          <div>
+            <p class="eyebrow">CONTENTS</p>
+            <h1>章节</h1>
+          </div>
+          <button class="add-chapter" id="add-chapter" type="button" title="新建章节" aria-label="新建章节">+</button>
+        </div>
+        <div class="chapter-list" id="chapter-list"></div>
+        <p class="sidebar-message" id="sidebar-message"></p>
+      </aside>
+
+      <section class="writing-pane">
+        <div class="writing-heading">
+          <input id="chapter-title" class="chapter-title" type="text" placeholder="章节标题" maxlength="200" />
+          <div class="chapter-tools">
+            <span id="word-count">0 字</span>
+            <select id="chapter-status" aria-label="章节状态">
+              <option value="draft">未写</option>
+              <option value="writing">写作中</option>
+              <option value="completed">已完成</option>
+            </select>
+            <button id="delete-chapter" class="icon-action danger" type="button" title="删除章节" aria-label="删除章节">⌫</button>
+          </div>
+        </div>
+        <textarea id="chapter-content" placeholder="从这里开始写下这一章..."></textarea>
+        <div class="writing-footer">
+          <span>纯文本编辑</span>
+          <button id="save-chapter" class="save-button" type="button">保存章节</button>
+        </div>
+        <p class="editor-message" id="editor-message" role="status"></p>
+      </section>
+    </main>
+    <script src="./editor.js"></script>
+  </body>
+</html>

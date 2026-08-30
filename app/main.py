@@ -80,6 +80,13 @@ class CreateChapterRequest(BaseModel):
     status: str = Field(default="draft", pattern=r"^(draft|writing|completed)$")
 
 
+class UpdateChapterRequest(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=200)
+    content: str | None = Field(default=None, max_length=200_000)
+    position: int | None = Field(default=None, ge=1)
+    status: str | None = Field(default=None, pattern=r"^(draft|writing|completed)$")
+
+
 class ChapterResponse(BaseModel):
     id: UUID
     work_id: UUID
@@ -546,6 +553,61 @@ async def list_chapters(
             work_id,
         )
     return [ChapterResponse(**dict(row)) for row in rows]
+
+
+@app.patch("/api/chapters/{chapter_id}", response_model=ChapterResponse)
+async def update_chapter(
+    chapter_id: UUID,
+    request: UpdateChapterRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> ChapterResponse:
+    if request.title is None and request.content is None and request.position is None and request.status is None:
+        raise HTTPException(status_code=400, detail="至少提供一个需要修改的字段")
+    async with app.state.db_pool.acquire() as connection:
+        try:
+            row = await connection.fetchrow(
+                """
+                UPDATE chapters AS c
+                SET title = COALESCE($1, c.title),
+                    content = COALESCE($2, c.content),
+                    position = COALESCE($3, c.position),
+                    status = COALESCE($4, c.status),
+                    updated_at = NOW()
+                FROM works AS w
+                WHERE c.id = $5 AND c.work_id = w.id AND w.user_id = $6
+                RETURNING c.id, c.work_id, c.title, c.content, c.position, c.status
+                """,
+                request.title,
+                request.content,
+                request.position,
+                request.status,
+                chapter_id,
+                current_user.id,
+            )
+        except asyncpg.UniqueViolationError as exc:
+            raise HTTPException(status_code=409, detail="该作品内的章节序号已存在") from exc
+    if row is None:
+        raise HTTPException(status_code=404, detail="章节不存在")
+    return ChapterResponse(**dict(row))
+
+
+@app.delete("/api/chapters/{chapter_id}", status_code=204)
+async def delete_chapter(
+    chapter_id: UUID,
+    current_user: UserResponse = Depends(get_current_user),
+) -> None:
+    async with app.state.db_pool.acquire() as connection:
+        deleted = await connection.execute(
+            """
+            DELETE FROM chapters AS c
+            USING works AS w
+            WHERE c.id = $1 AND c.work_id = w.id AND w.user_id = $2
+            """,
+            chapter_id,
+            current_user.id,
+        )
+    if deleted == "DELETE 0":
+        raise HTTPException(status_code=404, detail="章节不存在")
 
 
 @app.post("/api/ai/chat", response_model=ChatResponse)
