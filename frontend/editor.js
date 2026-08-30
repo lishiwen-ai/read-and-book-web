@@ -182,6 +182,7 @@ function escapeHtml(value) {
 
 function toggleAiPanel(open) {
   aiPanel.classList.toggle("hidden", !open);
+  document.body.classList.toggle("ai-open", open);
   aiToggle.setAttribute("aria-expanded", String(open));
   if (open) aiInput.focus();
 }
