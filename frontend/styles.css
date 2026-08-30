@@ -48,8 +48,22 @@ button {
   justify-content: space-between;
   overflow: hidden;
   padding: 56px clamp(36px, 7vw, 112px) 46px;
-  background: var(--ink);
+  background:
+    linear-gradient(145deg, rgba(22, 45, 42, 0.96), rgba(17, 35, 33, 0.98)),
+    var(--ink);
   color: #f5f3e9;
+}
+
+.brand-panel::after {
+  position: absolute;
+  right: -7%;
+  bottom: -15%;
+  width: 64%;
+  height: 66%;
+  border: 1px solid rgba(214, 239, 226, 0.22);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-25deg);
 }
 
 .brand-mark {
@@ -60,21 +74,6 @@ button {
   align-items: flex-end;
   gap: 5px;
   z-index: 1;
-}
-
-.brand-top {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.brand-index {
-  color: #91aaa0;
-  font-family: "DM Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.08em;
 }
 
 .brand-mark span {
@@ -100,7 +99,7 @@ button {
   max-width: 550px;
   margin-top: auto;
   margin-bottom: auto;
-  padding: 12vh 0;
+  padding: 12vh 0 10vh;
 }
 
 .eyebrow {
@@ -125,8 +124,8 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(52px, 6.4vw, 92px);
-  line-height: 1.08;
+  font-size: clamp(42px, 5.1vw, 76px);
+  line-height: 1.18;
 }
 
 h1 em {
@@ -134,37 +133,12 @@ h1 em {
   font-style: normal;
 }
 
-.brand-rule {
-  display: block;
-  width: 76px;
-  height: 1px;
-  margin: 30px 0 19px;
-  background: #e9b25d;
-}
-
-.brand-note {
-  margin: 0;
-  color: #a9beb5;
-  font-family: "DM Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-}
-
-.grid-mark {
-  position: absolute;
-  right: 10%;
-  bottom: 15%;
-  display: grid;
-  width: 94px;
-  height: 94px;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  border: 1px solid rgba(217, 232, 221, 0.24);
-  transform: rotate(45deg);
-}
-
-.grid-mark span {
-  border: 1px solid rgba(217, 232, 221, 0.18);
+.brand-description {
+  max-width: 300px;
+  margin: 30px 0 0;
+  color: #bfd0ca;
+  font-size: 15px;
+  line-height: 1.9;
 }
 
 .brand-foot {
@@ -427,22 +401,16 @@ h1 em {
   }
 
   .brand-copy {
-    padding: 36px 0 28px;
+    padding: 33px 0 28px;
   }
 
   .brand-copy h1 {
     font-size: 39px;
   }
 
-  .brand-note {
-    font-size: 9px;
-  }
-
-  .grid-mark {
-    right: 9%;
-    bottom: 16%;
-    width: 67px;
-    height: 67px;
+  .brand-description {
+    margin-top: 13px;
+    font-size: 13px;
   }
 
   .brand-foot {
