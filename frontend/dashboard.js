@@ -9,6 +9,7 @@ const emptyState = document.querySelector("#empty-state");
 const errorState = document.querySelector("#error-state");
 const workCount = document.querySelector("#work-count");
 const latestWork = document.querySelector("#latest-work");
+const recentActivity = document.querySelector("#recent-activity");
 const searchInput = document.querySelector("#work-search");
 const dialog = document.querySelector("#work-dialog");
 const workForm = document.querySelector("#work-form");
@@ -105,6 +106,7 @@ async function loadWorks() {
     const works = await response.json();
     workCount.textContent = works.length;
     latestWork.textContent = works[0]?.title || "暂无";
+    recentActivity.textContent = works.length ? "编辑作品" : "暂无记录";
     renderWorks(works);
     searchInput.addEventListener("input", () => renderWorks(works));
   } catch (error) {
