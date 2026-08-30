@@ -33,12 +33,16 @@ a { color:inherit; text-decoration:none; }
 .chapter-title::placeholder { color:#bcc6c0; }
 .chapter-tools { display:flex; align-items:center; gap:13px; color:var(--muted); font-family:"DM Mono",monospace; font-size:10px; }
 .chapter-tools select { border:0; outline:0; background:transparent; color:var(--muted); font-size:11px; }
-.icon-action { border:0; background:transparent; color:#9aa69f; font-size:19px; }
-.icon-action:hover { color:var(--coral); }
+.editor-action { display:inline-flex; height:34px; align-items:center; justify-content:center; gap:7px; border:1px solid #c8d9d3; border-radius:3px; padding:0 11px; background:#fff; color:var(--teal); font-size:11px; font-weight:600; }
+.editor-action:hover { border-color:var(--teal); background:#f3f9f7; }
+.editor-action.danger { border-color:#e6c5bf; color:var(--coral); }
+.editor-action.danger:hover { border-color:var(--coral); background:#fff3f0; }
+.editor-action:disabled { cursor:not-allowed; opacity:.42; }
+.editor-action svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.6; }
 .writing-pane textarea { width:100%; min-height:60vh; flex:1; resize:none; border:0; outline:0; padding:34px 0; color:#3d4a45; font-family:"Noto Serif SC",serif; font-size:17px; line-height:2.15; }
 .writing-pane textarea::placeholder { color:#b9c3bd; }
 .writing-footer { display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:18px; color:#a0aba5; font-size:11px; }
-.save-button { border:0; border-radius:3px; padding:11px 17px; background:var(--teal); color:#fff; font-size:12px; }
-.save-button:hover { background:#155f5b; }
+.save-button { border-color:var(--teal); background:var(--teal); color:#fff; }
+.save-button:hover { border-color:#155f5b; background:#155f5b; }
 .save-button:disabled { cursor:wait; opacity:.6; }
 @media (max-width:700px) { .editor-topbar { grid-template-columns:1fr auto; } .editor-title { display:none; } .editor-layout { grid-template-columns:1fr; } .chapter-sidebar { border-right:0; border-bottom:1px solid var(--line); padding:25px 20px 18px; } .chapter-list { display:grid; max-height:150px; grid-template-columns:repeat(2,1fr); overflow:auto; } .writing-pane { padding:35px 20px 24px; } .chapter-title { font-size:25px; } .chapter-tools { gap:8px; } .writing-pane textarea { min-height:55vh; font-size:16px; } }

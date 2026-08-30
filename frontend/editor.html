@@ -42,13 +42,19 @@
               <option value="writing">写作中</option>
               <option value="completed">已完成</option>
             </select>
-            <button id="delete-chapter" class="icon-action danger" type="button" title="删除章节" aria-label="删除章节">⌫</button>
+            <button id="delete-chapter" class="editor-action danger" type="button" title="删除章节" aria-label="删除章节">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+              <span>删除</span>
+            </button>
           </div>
         </div>
         <textarea id="chapter-content" placeholder="从这里开始写下这一章..."></textarea>
         <div class="writing-footer">
           <span>纯文本编辑</span>
-          <button id="save-chapter" class="save-button" type="button">保存章节</button>
+          <button id="save-chapter" class="editor-action save-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v6h8V4M8 20v-6h8v6"></path></svg>
+            <span>保存章节</span>
+          </button>
         </div>
         <p class="editor-message" id="editor-message" role="status"></p>
       </section>
