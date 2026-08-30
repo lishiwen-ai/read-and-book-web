@@ -101,3 +101,12 @@ CREATE TABLE IF NOT EXISTS ai_conversations (
 
 CREATE INDEX IF NOT EXISTS idx_ai_conversations_user
     ON ai_conversations(user_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS user_ai_settings (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    provider VARCHAR(30) NOT NULL DEFAULT 'deepseek',
+    encrypted_api_key TEXT NOT NULL,
+    model VARCHAR(100) NOT NULL DEFAULT 'deepseek-chat',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

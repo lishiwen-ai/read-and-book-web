@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://127.0.0.1:8001";
 const token = localStorage.getItem("access_token");
 const currentUser = JSON.parse(localStorage.getItem("current_user") || "null");
 
@@ -21,6 +21,13 @@ const cancelDeleteWork = document.querySelector("#cancel-delete-work");
 const confirmDeleteWork = document.querySelector("#confirm-delete-work");
 let pendingWorkDeletion = null;
 const closeDialogButton = document.querySelector("#close-work-dialog");
+const aiSettingsButton = document.querySelector("#ai-settings-button");
+const aiSettingsDialog = document.querySelector("#ai-settings-dialog");
+const aiSettingsForm = document.querySelector("#ai-settings-form");
+const closeAiSettings = document.querySelector("#close-ai-settings");
+const deepseekApiKey = document.querySelector("#deepseek-api-key");
+const aiSettingsStatus = document.querySelector("#ai-settings-status");
+const deleteAiKey = document.querySelector("#delete-ai-key");
 
 if (!token || !currentUser) {
   window.location.href = "./index.html";
@@ -31,6 +38,19 @@ logoutButton.textContent = currentUser?.nickname?.slice(0, 1) || "我";
 
 function authHeaders() {
   return { Authorization: `Bearer ${token}` };
+}
+
+async function loadAiSettings() {
+  aiSettingsStatus.textContent = "正在读取配置...";
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings/ai`, { headers: authHeaders() });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "无法读取 AI 配置。");
+    aiSettingsStatus.textContent = data.configured ? "DeepSeek 密钥已配置" : "尚未配置 DeepSeek 密钥";
+    deleteAiKey.disabled = !data.configured;
+  } catch (error) {
+    aiSettingsStatus.textContent = error.message;
+  }
 }
 
 function showError(text) {
@@ -191,6 +211,57 @@ logoutButton.addEventListener("click", () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("current_user");
   window.location.href = "./index.html";
+});
+
+aiSettingsButton.addEventListener("click", () => {
+  deepseekApiKey.value = "";
+  aiSettingsDialog.showModal();
+  loadAiSettings();
+});
+closeAiSettings.addEventListener("click", () => aiSettingsDialog.close());
+aiSettingsDialog.addEventListener("cancel", () => aiSettingsDialog.close());
+aiSettingsForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const apiKey = deepseekApiKey.value.trim();
+  if (!apiKey) {
+    aiSettingsStatus.textContent = "请输入 DeepSeek API Key。";
+    return;
+  }
+  const saveButton = document.querySelector("#save-ai-key");
+  saveButton.disabled = true;
+  saveButton.textContent = "保存中...";
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings/ai`, {
+      method: "PUT",
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "保存 AI 密钥失败。");
+    deepseekApiKey.value = "";
+    aiSettingsStatus.textContent = `${data.provider} 密钥已保存`;
+    deleteAiKey.disabled = false;
+  } catch (error) {
+    aiSettingsStatus.textContent = error.message;
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "保存密钥";
+  }
+});
+deleteAiKey.addEventListener("click", async () => {
+  if (deleteAiKey.disabled) return;
+  deleteAiKey.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings/ai`, { method: "DELETE", headers: authHeaders() });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || "删除 AI 密钥失败。");
+    }
+    aiSettingsStatus.textContent = "DeepSeek 密钥已删除";
+  } catch (error) {
+    aiSettingsStatus.textContent = error.message;
+    deleteAiKey.disabled = false;
+  }
 });
 
 document.querySelector("#notes-link").addEventListener("click", (event) => {
