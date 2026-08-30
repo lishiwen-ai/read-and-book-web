@@ -24,6 +24,7 @@
         <div class="editor-tabs" role="tablist" aria-label="作品内容">
           <button class="editor-tab active" id="chapters-tab" type="button" role="tab">章节</button>
           <button class="editor-tab" id="characters-tab" type="button" role="tab">人物</button>
+          <button class="editor-tab" id="world-tab" type="button" role="tab">世界观</button>
         </div>
         <div class="sidebar-heading">
           <div id="chapters-heading">
@@ -33,6 +34,10 @@
           <div id="characters-heading" class="hidden">
             <p class="eyebrow">CAST</p>
             <h1>人物</h1>
+          </div>
+          <div id="world-heading" class="hidden">
+            <p class="eyebrow">SETTING</p>
+            <h1>世界观</h1>
           </div>
           <button class="add-chapter" id="add-chapter" type="button" title="新建章节" aria-label="新建章节">+</button>
         </div>
@@ -90,6 +95,28 @@
           <button class="editor-action save-button" type="submit">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v6h8V4M8 20v-6h8v6"></path></svg>
             <span>保存人物</span>
+          </button>
+        </form>
+      </section>
+
+      <section class="world-pane hidden" id="world-pane">
+        <div class="character-pane-heading">
+          <div>
+            <p class="eyebrow">WORLD SETTING</p>
+            <h2>世界观设定</h2>
+          </div>
+          <span class="setting-hint">自动保存设定</span>
+        </div>
+        <form id="world-form" class="world-form">
+          <label class="wide"><span>时代背景</span><textarea id="world-era" placeholder="故事发生的时代、政治背景和历史阶段。"></textarea></label>
+          <label class="wide"><span>地理环境</span><textarea id="world-geography" placeholder="地域、城市、边关、交通和自然环境。"></textarea></label>
+          <label><span>势力 / 组织</span><textarea id="world-factions" placeholder="主要势力、组织及其关系。"></textarea></label>
+          <label><span>规则 / 制度</span><textarea id="world-rules" placeholder="社会制度、权力规则或故事中的运行逻辑。"></textarea></label>
+          <label class="wide"><span>特殊设定</span><textarea id="world-special" placeholder="魔法体系、武功体系或其他必须遵守的设定。"></textarea></label>
+          <p class="editor-message" id="world-message" role="status"></p>
+          <button class="editor-action save-button" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v6h8V4M8 20v-6h8v6"></path></svg>
+            <span>保存世界观</span>
           </button>
         </form>
       </section>

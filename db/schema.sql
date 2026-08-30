@@ -59,6 +59,18 @@ CREATE TABLE IF NOT EXISTS characters (
 CREATE INDEX IF NOT EXISTS idx_characters_work_position
     ON characters(work_id, position);
 
+CREATE TABLE IF NOT EXISTS world_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    work_id UUID NOT NULL UNIQUE REFERENCES works(id) ON DELETE CASCADE,
+    era TEXT NOT NULL DEFAULT '',
+    geography TEXT NOT NULL DEFAULT '',
+    factions TEXT NOT NULL DEFAULT '',
+    rules TEXT NOT NULL DEFAULT '',
+    special_settings TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

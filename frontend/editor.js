@@ -16,11 +16,14 @@ const saveButton = document.querySelector("#save-chapter");
 const deleteButton = document.querySelector("#delete-chapter");
 const chaptersTab = document.querySelector("#chapters-tab");
 const charactersTab = document.querySelector("#characters-tab");
+const worldTab = document.querySelector("#world-tab");
 const chaptersHeading = document.querySelector("#chapters-heading");
 const charactersHeading = document.querySelector("#characters-heading");
+const worldHeading = document.querySelector("#world-heading");
 const characterList = document.querySelector("#character-list");
 const writingPane = document.querySelector(".writing-pane");
 const characterPane = document.querySelector("#character-pane");
+const worldPane = document.querySelector("#world-pane");
 const characterForm = document.querySelector("#character-form");
 const characterFormTitle = document.querySelector("#character-form-title");
 const characterMessage = document.querySelector("#character-message");
@@ -45,6 +48,13 @@ const newChapterTitle = document.querySelector("#new-chapter-title");
 const chapterDialogMessage = document.querySelector("#chapter-dialog-message");
 const cancelChapterDialog = document.querySelector("#cancel-chapter-dialog");
 const cancelChapterButton = document.querySelector("#cancel-chapter-button");
+const worldForm = document.querySelector("#world-form");
+const worldEra = document.querySelector("#world-era");
+const worldGeography = document.querySelector("#world-geography");
+const worldFactions = document.querySelector("#world-factions");
+const worldRules = document.querySelector("#world-rules");
+const worldSpecial = document.querySelector("#world-special");
+const worldMessage = document.querySelector("#world-message");
 let chapters = [];
 let activeChapter = null;
 let characters = [];
@@ -52,6 +62,8 @@ let activeCharacter = null;
 let autoSaveTimer = null;
 let saveInFlight = false;
 let pendingConfirmation = null;
+let worldSaveTimer = null;
+let worldSaveInFlight = false;
 
 if (!token || !user || !workId) window.location.href = "./dashboard.html";
 
@@ -71,15 +83,19 @@ function setEditorAvailability(enabled) {
 
 function setEditorMode(mode) {
   const charactersMode = mode === "characters";
-  chaptersTab.classList.toggle("active", !charactersMode);
+  const worldMode = mode === "world";
+  chaptersTab.classList.toggle("active", mode === "chapters");
   charactersTab.classList.toggle("active", charactersMode);
-  chaptersHeading.classList.toggle("hidden", charactersMode);
+  worldTab.classList.toggle("active", worldMode);
+  chaptersHeading.classList.toggle("hidden", charactersMode || worldMode);
   charactersHeading.classList.toggle("hidden", !charactersMode);
-  chapterList.classList.toggle("hidden", charactersMode);
+  worldHeading.classList.toggle("hidden", !worldMode);
+  chapterList.classList.toggle("hidden", charactersMode || worldMode);
   characterList.classList.toggle("hidden", !charactersMode);
-  addChapter.classList.toggle("hidden", charactersMode);
-  writingPane.classList.toggle("hidden", charactersMode);
+  addChapter.classList.toggle("hidden", charactersMode || worldMode);
+  writingPane.classList.toggle("hidden", charactersMode || worldMode);
   characterPane.classList.toggle("hidden", !charactersMode);
+  worldPane.classList.toggle("hidden", !worldMode);
 }
 
 function clearCharacterForm() {
@@ -178,6 +194,10 @@ async function loadWork() {
   if (!charactersResponse.ok) throw new Error("无法读取人物设定。");
   characters = await charactersResponse.json();
   renderCharacters();
+  const worldResponse = await fetch(`${API_BASE_URL}/api/works/${workId}/world-settings`, { headers: headers() });
+  if (!worldResponse.ok) throw new Error("无法读取世界观设定。");
+  const worldSettings = await worldResponse.json();
+  if (worldSettings) fillWorldForm(worldSettings);
   setEditorMode("chapters");
 }
 
@@ -221,6 +241,7 @@ charactersTab.addEventListener("click", () => {
   clearCharacterForm();
   setEditorMode("characters");
 });
+worldTab.addEventListener("click", () => setEditorMode("world"));
 cancelCharacter.addEventListener("click", clearCharacterForm);
 
 characterForm.addEventListener("submit", async (event) => {
@@ -278,6 +299,57 @@ async function deleteCharacter(characterId) {
   clearCharacterForm();
   renderCharacters();
 }
+
+function fillWorldForm(settings) {
+  worldEra.value = settings.era || "";
+  worldGeography.value = settings.geography || "";
+  worldFactions.value = settings.factions || "";
+  worldRules.value = settings.rules || "";
+  worldSpecial.value = settings.special_settings || "";
+}
+
+async function saveWorldSettings(isAutoSave = false) {
+  if (worldSaveInFlight) return;
+  worldSaveInFlight = true;
+  const saveButton = worldForm.querySelector("button[type='submit']");
+  saveButton.disabled = true;
+  saveButton.querySelector("span").textContent = isAutoSave ? "自动保存中..." : "保存世界观";
+  worldMessage.textContent = isAutoSave ? "自动保存中..." : "保存中...";
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/works/${workId}/world-settings`, {
+      method: "PUT",
+      headers: { ...headers(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        era: worldEra.value.trim(),
+        geography: worldGeography.value.trim(),
+        factions: worldFactions.value.trim(),
+        rules: worldRules.value.trim(),
+        special_settings: worldSpecial.value.trim(),
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "保存世界观失败。");
+    worldMessage.textContent = isAutoSave ? "已自动保存" : "保存成功";
+  } catch (error) {
+    worldMessage.textContent = error.message;
+  } finally {
+    worldSaveInFlight = false;
+    saveButton.disabled = false;
+    saveButton.querySelector("span").textContent = "保存世界观";
+  }
+}
+
+function scheduleWorldAutoSave() {
+  window.clearTimeout(worldSaveTimer);
+  worldMessage.textContent = "等待自动保存";
+  worldSaveTimer = window.setTimeout(() => saveWorldSettings(true), 1200);
+}
+
+worldForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  saveWorldSettings(false);
+});
+worldForm.querySelectorAll("textarea").forEach((field) => field.addEventListener("input", scheduleWorldAutoSave));
 
 function requestConfirmation(title, copy) {
   confirmTitle.textContent = title;

@@ -109,6 +109,19 @@ class CharacterResponse(CreateCharacterRequest):
     work_id: UUID
 
 
+class WorldSettingsRequest(BaseModel):
+    era: str = Field(default="", max_length=10_000)
+    geography: str = Field(default="", max_length=10_000)
+    factions: str = Field(default="", max_length=10_000)
+    rules: str = Field(default="", max_length=10_000)
+    special_settings: str = Field(default="", max_length=10_000)
+
+
+class WorldSettingsResponse(WorldSettingsRequest):
+    id: UUID
+    work_id: UUID
+
+
 class ChapterResponse(BaseModel):
     id: UUID
     work_id: UUID
@@ -739,6 +752,55 @@ async def delete_character(
         )
     if deleted == "DELETE 0":
         raise HTTPException(status_code=404, detail="人物设定不存在")
+
+
+@app.get("/api/works/{work_id}/world-settings", response_model=WorldSettingsResponse | None)
+async def get_world_settings(
+    work_id: UUID,
+    current_user: UserResponse = Depends(get_current_user),
+) -> WorldSettingsResponse | None:
+    async with app.state.db_pool.acquire() as connection:
+        await ensure_owned_work(connection, work_id, current_user.id)
+        row = await connection.fetchrow(
+            """
+            SELECT id, work_id, era, geography, factions, rules, special_settings
+            FROM world_settings
+            WHERE work_id = $1
+            """,
+            work_id,
+        )
+    return WorldSettingsResponse(**dict(row)) if row else None
+
+
+@app.put("/api/works/{work_id}/world-settings", response_model=WorldSettingsResponse)
+async def upsert_world_settings(
+    work_id: UUID,
+    request: WorldSettingsRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> WorldSettingsResponse:
+    async with app.state.db_pool.acquire() as connection:
+        await ensure_owned_work(connection, work_id, current_user.id)
+        row = await connection.fetchrow(
+            """
+            INSERT INTO world_settings (work_id, era, geography, factions, rules, special_settings)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT (work_id) DO UPDATE
+            SET era = EXCLUDED.era,
+                geography = EXCLUDED.geography,
+                factions = EXCLUDED.factions,
+                rules = EXCLUDED.rules,
+                special_settings = EXCLUDED.special_settings,
+                updated_at = NOW()
+            RETURNING id, work_id, era, geography, factions, rules, special_settings
+            """,
+            work_id,
+            request.era,
+            request.geography,
+            request.factions,
+            request.rules,
+            request.special_settings,
+        )
+    return WorldSettingsResponse(**dict(row))
 
 
 @app.post("/api/ai/chat", response_model=ChatResponse)
