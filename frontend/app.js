@@ -115,6 +115,6 @@ form.addEventListener("submit", async (event) => {
     setMessage(error.message || "暂时无法连接服务器。");
   } finally {
     submitButton.disabled = false;
-    submitButton.querySelector("span").textContent = "创建账号";
+    submitLabel.textContent = isLoginMode ? "登录" : "创建账号";
   }
 });
