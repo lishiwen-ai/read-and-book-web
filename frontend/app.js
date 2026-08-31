@@ -15,7 +15,7 @@ const registerOnlyFields = document.querySelectorAll(".register-only");
 const registerSwitch = document.querySelector("#register-switch");
 const loginSwitch = document.querySelector("#login-switch");
 
-const API_BASE_URL = "http://127.0.0.1:8001";
+const API_BASE_URL = "http://127.0.0.1:8000";
 let isLoginMode = false;
 
 function setMessage(text, isSuccess = false) {
