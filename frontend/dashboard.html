@@ -94,6 +94,38 @@
         <section class="note-list" id="note-list" aria-live="polite"></section>
         <p class="empty-state hidden" id="notes-empty-state">还没有随笔，先记下一个灵感吧。</p>
       </section>
+
+      <section class="history-section hidden" id="history-section" aria-label="阅读历史">
+        <div class="history-heading">
+          <div>
+            <p class="eyebrow">READING LOG</p>
+            <h2>阅读历史</h2>
+            <p class="history-copy">记下正在读过的书，也记住每一次停留在书页里的时刻。</p>
+          </div>
+          <button class="primary-button" id="new-reading-button" type="button">
+            <span class="plus" aria-hidden="true">+</span>
+            添加阅读记录
+          </button>
+        </div>
+        <div class="history-toolbar">
+          <label class="search-box history-search">
+            <span aria-hidden="true">⌕</span>
+            <input id="history-search" type="search" placeholder="搜索书名、作者或备注" aria-label="搜索阅读记录" />
+          </label>
+          <label class="history-filter">
+            <span>状态</span>
+            <select id="history-status-filter" aria-label="按阅读状态筛选">
+              <option value="">全部</option>
+              <option value="reading">在读</option>
+              <option value="planned">待读</option>
+              <option value="completed">已读完</option>
+              <option value="paused">暂时搁置</option>
+            </select>
+          </label>
+        </div>
+        <section class="history-list" id="history-list" aria-live="polite"></section>
+        <p class="empty-state hidden" id="history-empty-state">还没有阅读记录，先添加一本正在读的书吧。</p>
+      </section>
     </main>
 
     <dialog class="work-dialog" id="work-dialog">
@@ -149,6 +181,51 @@
         </label>
         <p class="dialog-message" id="note-dialog-message" role="status"></p>
         <button class="primary-button full-button" id="save-note-submit" type="submit">保存随笔</button>
+      </form>
+    </dialog>
+    <dialog class="reading-dialog" id="reading-dialog">
+      <form id="reading-form">
+        <button class="close-button" id="close-reading-dialog" type="button" aria-label="关闭">×</button>
+        <p class="eyebrow">READING LOG</p>
+        <h2 id="reading-dialog-title">添加阅读记录</h2>
+        <p class="dialog-copy">记录这本书读到哪里，下一次回来时可以接着走。</p>
+        <div class="reading-form-grid">
+          <label class="dialog-field">
+            <span>书名</span>
+            <input id="reading-title" type="text" maxlength="200" placeholder="例如：万历十五年" required />
+          </label>
+          <label class="dialog-field">
+            <span>作者 <small>可选</small></span>
+            <input id="reading-author" type="text" maxlength="200" placeholder="例如：黄仁宇" />
+          </label>
+          <label class="dialog-field">
+            <span>分类 <small>可选</small></span>
+            <input id="reading-category" type="text" maxlength="100" placeholder="例如：历史" />
+          </label>
+          <label class="dialog-field">
+            <span>阅读状态</span>
+            <select id="reading-status">
+              <option value="reading">在读</option>
+              <option value="planned">待读</option>
+              <option value="completed">已读完</option>
+              <option value="paused">暂时搁置</option>
+            </select>
+          </label>
+          <label class="dialog-field">
+            <span>总页数 <small>可选</small></span>
+            <input id="reading-total-pages" type="number" min="0" step="1" placeholder="例如：320" />
+          </label>
+          <label class="dialog-field">
+            <span>当前页</span>
+            <input id="reading-current-page" type="number" min="0" step="1" value="0" />
+          </label>
+        </div>
+        <label class="dialog-field">
+          <span>阅读备注 <small>可选</small></span>
+          <textarea id="reading-notes" maxlength="5000" placeholder="留下摘录位置、读后感或下一次想继续的地方。"></textarea>
+        </label>
+        <p class="dialog-message" id="reading-dialog-message" role="status"></p>
+        <button class="primary-button full-button" id="save-reading-submit" type="submit">保存阅读记录</button>
       </form>
     </dialog>
     <dialog class="settings-dialog" id="ai-settings-dialog">

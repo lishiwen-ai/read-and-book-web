@@ -49,6 +49,17 @@ uvicorn app.main:app --reload
 - `PATCH /api/notes/{note_id}`：修改随笔
 - `DELETE /api/notes/{note_id}`：删除随笔
 
+## 阅读历史接口
+
+阅读历史用于记录正在读、计划阅读、已读完或暂时搁置的书籍：
+
+- `POST /api/reading-history`：新增阅读记录
+- `GET /api/reading-history`：查看阅读记录，支持 `status_filter`、`search` 筛选
+- `PATCH /api/reading-history/{reading_id}`：修改阅读进度和状态
+- `DELETE /api/reading-history/{reading_id}`：删除阅读记录
+
+阅读记录包含书名、作者、分类、总页数、当前页、阅读状态和备注。
+
 创建示例：
 
 ```json

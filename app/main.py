@@ -174,6 +174,28 @@ class NoteResponse(BaseModel):
     tags: list[str]
 
 
+class CreateReadingHistoryRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    author: str = Field(default="", max_length=200)
+    category: str = Field(default="", max_length=100)
+    total_pages: int = Field(default=0, ge=0)
+    current_page: int = Field(default=0, ge=0)
+    status: str = Field(default="reading", pattern=r"^(planned|reading|completed|paused)$")
+    notes: str = Field(default="", max_length=5_000)
+
+
+class UpdateReadingHistoryRequest(CreateReadingHistoryRequest):
+    pass
+
+
+class ReadingHistoryResponse(CreateReadingHistoryRequest):
+    id: UUID
+    user_id: UUID
+    last_read_at: datetime
+    created_at: datetime
+    updated_at: datetime
+
+
 def hash_password(password: str) -> str:
     """生成带随机盐的 scrypt 密码散列；绝不保存明文密码。"""
     salt = secrets.token_bytes(16)
@@ -661,6 +683,124 @@ async def delete_note(
         )
     if deleted == "DELETE 0":
         raise HTTPException(status_code=404, detail="随笔不存在")
+
+
+def validate_reading_progress(total_pages: int, current_page: int) -> None:
+    if total_pages and current_page > total_pages:
+        raise HTTPException(status_code=400, detail="当前页不能超过总页数")
+
+
+@app.post("/api/reading-history", response_model=ReadingHistoryResponse, status_code=201)
+async def create_reading_history(
+    request: CreateReadingHistoryRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> ReadingHistoryResponse:
+    validate_reading_progress(request.total_pages, request.current_page)
+    async with app.state.db_pool.acquire() as connection:
+        row = await connection.fetchrow(
+            """
+            INSERT INTO reading_history (
+                user_id, title, author, category, total_pages, current_page, status, notes
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING id, user_id, title, author, category, total_pages, current_page,
+                      status, notes, last_read_at, created_at, updated_at
+            """,
+            current_user.id,
+            request.title,
+            request.author,
+            request.category,
+            request.total_pages,
+            request.current_page,
+            request.status,
+            request.notes,
+        )
+    return ReadingHistoryResponse(**dict(row))
+
+
+@app.get("/api/reading-history", response_model=list[ReadingHistoryResponse])
+async def list_reading_history(
+    status_filter: str | None = None,
+    search: str | None = None,
+    current_user: UserResponse = Depends(get_current_user),
+) -> list[ReadingHistoryResponse]:
+    conditions = ["user_id = $1"]
+    args: list[object] = [current_user.id]
+    if status_filter:
+        if status_filter not in {"planned", "reading", "completed", "paused"}:
+            raise HTTPException(status_code=400, detail="阅读状态无效")
+        args.append(status_filter)
+        conditions.append(f"status = ${len(args)}")
+    if search:
+        args.append(f"%{search}%")
+        conditions.append(
+            f"(title ILIKE ${len(args)} OR author ILIKE ${len(args)} OR notes ILIKE ${len(args)})"
+        )
+    rows = await app.state.db_pool.fetch(
+        f"""
+        SELECT id, user_id, title, author, category, total_pages, current_page,
+               status, notes, last_read_at, created_at, updated_at
+        FROM reading_history
+        WHERE {" AND ".join(conditions)}
+        ORDER BY last_read_at DESC, updated_at DESC
+        """,
+        *args,
+    )
+    return [ReadingHistoryResponse(**dict(row)) for row in rows]
+
+
+@app.patch("/api/reading-history/{reading_id}", response_model=ReadingHistoryResponse)
+async def update_reading_history(
+    reading_id: UUID,
+    request: UpdateReadingHistoryRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> ReadingHistoryResponse:
+    validate_reading_progress(request.total_pages, request.current_page)
+    async with app.state.db_pool.acquire() as connection:
+        row = await connection.fetchrow(
+            """
+            UPDATE reading_history
+            SET title = $1,
+                author = $2,
+                category = $3,
+                total_pages = $4,
+                current_page = $5,
+                status = $6,
+                notes = $7,
+                last_read_at = NOW(),
+                updated_at = NOW()
+            WHERE id = $8 AND user_id = $9
+            RETURNING id, user_id, title, author, category, total_pages, current_page,
+                      status, notes, last_read_at, created_at, updated_at
+            """,
+            request.title,
+            request.author,
+            request.category,
+            request.total_pages,
+            request.current_page,
+            request.status,
+            request.notes,
+            reading_id,
+            current_user.id,
+        )
+    if row is None:
+        raise HTTPException(status_code=404, detail="阅读记录不存在")
+    return ReadingHistoryResponse(**dict(row))
+
+
+@app.delete("/api/reading-history/{reading_id}", status_code=204)
+async def delete_reading_history(
+    reading_id: UUID,
+    current_user: UserResponse = Depends(get_current_user),
+) -> None:
+    async with app.state.db_pool.acquire() as connection:
+        deleted = await connection.execute(
+            "DELETE FROM reading_history WHERE id = $1 AND user_id = $2",
+            reading_id,
+            current_user.id,
+        )
+    if deleted == "DELETE 0":
+        raise HTTPException(status_code=404, detail="阅读记录不存在")
 
 
 @app.post("/api/works/{work_id}/chapters", response_model=ChapterResponse, status_code=201)

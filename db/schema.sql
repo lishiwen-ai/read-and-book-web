@@ -84,6 +84,26 @@ CREATE TABLE IF NOT EXISTS notes (
 CREATE INDEX IF NOT EXISTS idx_notes_user_updated
     ON notes(user_id, updated_at DESC);
 
+CREATE TABLE IF NOT EXISTS reading_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL,
+    author VARCHAR(200) NOT NULL DEFAULT '',
+    category VARCHAR(100) NOT NULL DEFAULT '',
+    total_pages INTEGER NOT NULL DEFAULT 0 CHECK (total_pages >= 0),
+    current_page INTEGER NOT NULL DEFAULT 0 CHECK (current_page >= 0),
+    status VARCHAR(20) NOT NULL DEFAULT 'reading'
+        CHECK (status IN ('planned', 'reading', 'completed', 'paused')),
+    notes TEXT NOT NULL DEFAULT '',
+    last_read_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CHECK (total_pages = 0 OR current_page <= total_pages)
+);
+
+CREATE INDEX IF NOT EXISTS idx_reading_history_user_last_read
+    ON reading_history(user_id, last_read_at DESC);
+
 CREATE TABLE IF NOT EXISTS ai_conversations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
