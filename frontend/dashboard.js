@@ -21,8 +21,10 @@ const cancelDeleteWork = document.querySelector("#cancel-delete-work");
 const confirmDeleteWork = document.querySelector("#confirm-delete-work");
 const collectionHeading = document.querySelector("#collection-heading");
 const notesSection = document.querySelector("#notes-section");
+const historySection = document.querySelector("#history-section");
 const workspaceLink = document.querySelector("#workspace-link");
 const notesLink = document.querySelector("#notes-link");
+const historyLink = document.querySelector("#history-link");
 const newNoteButton = document.querySelector("#new-note-button");
 const noteSearch = document.querySelector("#note-search");
 const noteTagFilter = document.querySelector("#note-tag-filter");
@@ -37,10 +39,30 @@ const noteContent = document.querySelector("#note-content");
 const noteTags = document.querySelector("#note-tags");
 const noteDialogMessage = document.querySelector("#note-dialog-message");
 const saveNoteSubmit = document.querySelector("#save-note-submit");
+const newReadingButton = document.querySelector("#new-reading-button");
+const historySearch = document.querySelector("#history-search");
+const historyStatusFilter = document.querySelector("#history-status-filter");
+const historyList = document.querySelector("#history-list");
+const historyEmptyState = document.querySelector("#history-empty-state");
+const readingDialog = document.querySelector("#reading-dialog");
+const readingForm = document.querySelector("#reading-form");
+const readingDialogTitle = document.querySelector("#reading-dialog-title");
+const closeReadingDialog = document.querySelector("#close-reading-dialog");
+const readingTitle = document.querySelector("#reading-title");
+const readingAuthor = document.querySelector("#reading-author");
+const readingCategory = document.querySelector("#reading-category");
+const readingStatus = document.querySelector("#reading-status");
+const readingTotalPages = document.querySelector("#reading-total-pages");
+const readingCurrentPage = document.querySelector("#reading-current-page");
+const readingNotes = document.querySelector("#reading-notes");
+const readingDialogMessage = document.querySelector("#reading-dialog-message");
+const saveReadingSubmit = document.querySelector("#save-reading-submit");
 let pendingWorkDeletion = null;
 let works = [];
 let notes = [];
+let readingHistory = [];
 let editingNoteId = null;
+let editingReadingId = null;
 const closeDialogButton = document.querySelector("#close-work-dialog");
 const aiSettingsButton = document.querySelector("#ai-settings-button");
 const aiSettingsDialog = document.querySelector("#ai-settings-dialog");
@@ -171,12 +193,15 @@ function renderWorks(works) {
 
 function showWorkspaceView(view) {
   const notesView = view === "notes";
-  collectionHeading.classList.toggle("hidden", notesView);
-  workGrid.classList.toggle("hidden", notesView);
-  emptyState.classList.toggle("hidden", notesView || workGrid.children.length !== 0);
+  const historyView = view === "history";
+  collectionHeading.classList.toggle("hidden", notesView || historyView);
+  workGrid.classList.toggle("hidden", notesView || historyView);
+  emptyState.classList.toggle("hidden", notesView || historyView || workGrid.children.length !== 0);
   notesSection.classList.toggle("hidden", !notesView);
-  workspaceLink.classList.toggle("active", !notesView);
+  historySection.classList.toggle("hidden", !historyView);
+  workspaceLink.classList.toggle("active", !notesView && !historyView);
   notesLink.classList.toggle("active", notesView);
+  historyLink.classList.toggle("active", historyView);
   if (!notesView) errorState.classList.add("hidden");
 }
 
@@ -237,6 +262,60 @@ function renderNotes() {
         open();
       }
     });
+  });
+}
+
+const readingStatusLabels = {
+  planned: "待读",
+  reading: "在读",
+  completed: "已读完",
+  paused: "暂时搁置",
+};
+
+function renderReadingHistory() {
+  const keyword = historySearch.value.trim().toLowerCase();
+  const status = historyStatusFilter.value;
+  const filtered = readingHistory.filter((item) => {
+    const haystack = `${item.title} ${item.author} ${item.category} ${item.notes}`.toLowerCase();
+    return haystack.includes(keyword) && (!status || item.status === status);
+  });
+  historyList.innerHTML = filtered.map((item) => {
+    const progress = item.total_pages > 0
+      ? Math.min(100, Math.round((item.current_page / item.total_pages) * 100))
+      : 0;
+    const progressText = item.total_pages > 0
+      ? `${item.current_page} / ${item.total_pages} 页`
+      : `已读 ${item.current_page} 页`;
+    return `
+      <article class="history-card">
+        <div class="history-card-heading">
+          <div>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p class="history-author">${escapeHtml(item.author || "作者未填写")}${item.category ? ` · ${escapeHtml(item.category)}` : ""}</p>
+          </div>
+          <div class="history-actions">
+            <span class="history-status ${escapeHtml(item.status)}">${readingStatusLabels[item.status] || "阅读中"}</span>
+            <button class="history-edit-button" type="button" data-reading-id="${item.id}" title="编辑阅读记录">编辑</button>
+            <button class="history-delete-button" type="button" data-reading-id="${item.id}" aria-label="删除阅读记录" title="删除阅读记录">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+            </button>
+          </div>
+        </div>
+        <div class="history-progress">
+          <div class="history-progress-line"><span>阅读进度</span><strong>${progressText} · ${progress}%</strong></div>
+          <div class="history-progress-track" aria-label="阅读进度 ${progress}%"><div class="history-progress-value" style="width:${progress}%"></div></div>
+        </div>
+        ${item.notes ? `<p class="history-card-note">${escapeHtml(item.notes)}</p>` : ""}
+        <div class="history-card-footer">最近阅读 · ${formatDateTime(item.last_read_at)}</div>
+      </article>
+    `;
+  }).join("");
+  historyEmptyState.classList.toggle("hidden", filtered.length !== 0);
+  historyList.querySelectorAll(".history-edit-button").forEach((button) => {
+    button.addEventListener("click", () => openReadingDialog(readingHistory.find((item) => item.id === button.dataset.readingId)));
+  });
+  historyList.querySelectorAll(".history-delete-button").forEach((button) => {
+    button.addEventListener("click", () => deleteReadingHistory(button.dataset.readingId));
   });
 }
 
@@ -334,6 +413,12 @@ function formatDate(value) {
   return Number.isNaN(date.getTime()) ? "刚刚" : date.toLocaleDateString("zh-CN");
 }
 
+function formatDateTime(value) {
+  if (!value) return "刚刚";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "刚刚" : date.toLocaleString("zh-CN", { dateStyle: "medium", timeStyle: "short" });
+}
+
 async function loadWorks() {
   try {
     const response = await fetch(`${API_BASE_URL}/api/users/${currentUser.id}/works`, {
@@ -350,6 +435,52 @@ async function loadWorks() {
     latestWork.textContent = works[0]?.title || "暂无";
     recentActivity.textContent = works.length ? "编辑作品" : "暂无记录";
     renderWorks(works);
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+async function loadReadingHistory() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/reading-history`, { headers: authHeaders() });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "暂时无法读取阅读历史。");
+    readingHistory = data;
+    renderReadingHistory();
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+function openReadingDialog(item = null) {
+  editingReadingId = item?.id || null;
+  readingDialogTitle.textContent = item ? "编辑阅读记录" : "添加阅读记录";
+  readingTitle.value = item?.title || "";
+  readingAuthor.value = item?.author || "";
+  readingCategory.value = item?.category || "";
+  readingStatus.value = item?.status || "reading";
+  readingTotalPages.value = item?.total_pages ? item.total_pages : "";
+  readingCurrentPage.value = item?.current_page ?? 0;
+  readingNotes.value = item?.notes || "";
+  readingDialogMessage.textContent = "";
+  readingDialog.showModal();
+  readingTitle.focus();
+}
+
+async function deleteReadingHistory(readingId) {
+  const item = readingHistory.find((entry) => entry.id === readingId);
+  if (!item || !window.confirm(`确定删除《${item.title}》的阅读记录？`)) return;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/reading-history/${readingId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || "删除阅读记录失败。");
+    }
+    readingHistory = readingHistory.filter((entry) => entry.id !== readingId);
+    renderReadingHistory();
   } catch (error) {
     showError(error.message);
   }
@@ -491,9 +622,10 @@ workspaceLink.addEventListener("click", (event) => {
   renderWorks(works);
 });
 
-document.querySelector("#history-link").addEventListener("click", (event) => {
+historyLink.addEventListener("click", (event) => {
   event.preventDefault();
-  showError("阅读历史模块将在书库数据接入后开放。");
+  showWorkspaceView("history");
+  loadReadingHistory();
 });
 
 newNoteButton.addEventListener("click", () => openNoteDialog());
@@ -501,6 +633,62 @@ closeNoteDialog.addEventListener("click", () => noteDialog.close());
 noteDialog.addEventListener("cancel", () => noteDialog.close());
 noteSearch.addEventListener("input", renderNotes);
 noteTagFilter.addEventListener("input", renderNotes);
+historySearch.addEventListener("input", renderReadingHistory);
+historyStatusFilter.addEventListener("change", renderReadingHistory);
+
+newReadingButton.addEventListener("click", () => openReadingDialog());
+closeReadingDialog.addEventListener("click", () => readingDialog.close());
+readingDialog.addEventListener("cancel", () => readingDialog.close());
+
+readingForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const totalPages = Number.parseInt(readingTotalPages.value, 10) || 0;
+  const currentPage = Number.parseInt(readingCurrentPage.value, 10) || 0;
+  const payload = {
+    title: readingTitle.value.trim(),
+    author: readingAuthor.value.trim(),
+    category: readingCategory.value.trim(),
+    total_pages: totalPages,
+    current_page: currentPage,
+    status: readingStatus.value,
+    notes: readingNotes.value.trim(),
+  };
+  if (!payload.title) {
+    readingDialogMessage.textContent = "请填写书名。";
+    return;
+  }
+  if (currentPage > totalPages && totalPages > 0) {
+    readingDialogMessage.textContent = "当前页不能超过总页数。";
+    return;
+  }
+  saveReadingSubmit.disabled = true;
+  saveReadingSubmit.textContent = "保存中...";
+  readingDialogMessage.textContent = "";
+  try {
+    const response = await fetch(
+      editingReadingId ? `${API_BASE_URL}/api/reading-history/${editingReadingId}` : `${API_BASE_URL}/api/reading-history`,
+      {
+        method: editingReadingId ? "PATCH" : "POST",
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "保存阅读记录失败。");
+    if (editingReadingId) {
+      readingHistory = readingHistory.map((item) => item.id === data.id ? data : item);
+    } else {
+      readingHistory.unshift(data);
+    }
+    readingDialog.close();
+    renderReadingHistory();
+  } catch (error) {
+    readingDialogMessage.textContent = error.message;
+  } finally {
+    saveReadingSubmit.disabled = false;
+    saveReadingSubmit.textContent = "保存阅读记录";
+  }
+});
 
 noteForm.addEventListener("submit", async (event) => {
   event.preventDefault();
