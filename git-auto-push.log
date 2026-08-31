@@ -49,3 +49,21 @@
 [2026-08-31 18:01:59] File changes detected, starting sync...
 [2026-08-31 18:01:59] Changed files:
 [2026-08-31 18:01:59]    M git-auto-push.log
+[2026-08-31 18:02:00] All changes added to staging area
+[2026-08-31 18:02:00] git commit: [main 188878c] Auto sync - 2026-08-31 18:02:00
+[2026-08-31 18:02:00] git commit:  1 file changed, 22 insertions(+)
+[2026-08-31 18:02:00] Pulling latest from remote...
+[2026-08-31 18:02:00] git pull: error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 18:02:00] git pull: error: Please commit or stash them.
+[2026-08-31 18:02:00] WARNING: Pull may have conflicts (exit code: 128)
+[2026-08-31 18:02:00] Pushing to GitHub...
+[2026-08-31 18:02:05] git push: To https://github.com/lishiwen-ai/read-and-book-web.git
+[2026-08-31 18:02:05] git push:    f188cbb..188878c  main -> main
+[2026-08-31 18:02:05] SUCCESS: Pushed to GitHub!
+[2026-08-31 18:02:05] ===== Sync Complete =====
+[2026-08-31 18:11:26] ===== Start Auto Push Check (Dual Platform) =====
+[2026-08-31 18:11:26] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-08-31 18:11:26] File changes detected, starting sync...
+[2026-08-31 18:11:26] Changed files:
+[2026-08-31 18:11:26]    M auto-push.ps1
+[2026-08-31 18:11:26]    M git-auto-push.log

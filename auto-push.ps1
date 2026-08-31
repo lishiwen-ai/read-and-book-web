@@ -1,5 +1,5 @@
-# Git Auto Push Script
-# Automatically detect file changes and push to GitHub
+# Git Auto Push Script - Dual Platform (GitHub + Gitee)
+# Automatically detect file changes and push to both GitHub and Gitee
 # Run this script from the project directory
 
 $ErrorActionPreference = "Continue"
@@ -7,6 +7,10 @@ $ErrorActionPreference = "Continue"
 # Use current directory as project path
 $ProjectPath = Get-Location
 $LogPath = Join-Path $ProjectPath "git-auto-push.log"
+
+# Remote names
+$GitHubRemote = "origin"
+$GiteeRemote = "gitee"
 
 function Write-Log {
     param([string]$Message)
@@ -18,19 +22,12 @@ function Write-Log {
     } catch {}
 }
 
-Write-Log "===== Start Auto Push Check ====="
+Write-Log "===== Start Auto Push Check (Dual Platform) ====="
 Write-Log "Project path: $ProjectPath"
 
 # Check if it's a git repository
 if (-not (Test-Path ".git")) {
     Write-Log "ERROR: Not a Git repository"
-    exit 1
-}
-
-# Check if remote is configured
-$remote = git remote -v 2>&1
-if ([string]::IsNullOrWhiteSpace($remote)) {
-    Write-Log "ERROR: No remote repository configured"
     exit 1
 }
 
@@ -71,25 +68,58 @@ if ($LASTEXITCODE -ne 0) {
     Write-Log "WARNING: Commit may have failed (exit code: $LASTEXITCODE)"
 }
 
-# Pull latest from remote
-Write-Log "Pulling latest from remote..."
-$pullResult = git pull --rebase origin main 2>&1
-$pullResult | ForEach-Object { Write-Log "git pull: $_" }
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Log "WARNING: Pull may have conflicts (exit code: $LASTEXITCODE)"
+# ========== Push to GitHub ==========
+Write-Log "--- Pushing to GitHub ---"
+$hasGitHubRemote = git remote | Where-Object { $_ -eq $GitHubRemote }
+if ($hasGitHubRemote) {
+    # Pull first
+    Write-Log "Pulling latest from GitHub..."
+    $pullResult = git pull --rebase $GitHubRemote main 2>&1
+    $pullResult | ForEach-Object { Write-Log "git pull (GitHub): $_" }
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "WARNING: GitHub pull may have conflicts (exit code: $LASTEXITCODE)"
+    }
+    
+    # Push
+    Write-Log "Pushing to GitHub..."
+    $pushResult = git push $GitHubRemote main 2>&1
+    $pushResult | ForEach-Object { Write-Log "git push (GitHub): $_" }
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Log "SUCCESS: Pushed to GitHub!"
+    } else {
+        Write-Log "FAILED: GitHub push failed (exit code: $LASTEXITCODE)"
+    }
+} else {
+    Write-Log "SKIP: GitHub remote '$GitHubRemote' not found"
 }
 
-# Push to remote
-Write-Log "Pushing to GitHub..."
-$pushResult = git push origin main 2>&1
-$pushResult | ForEach-Object { Write-Log "git push: $_" }
-
-if ($LASTEXITCODE -eq 0) {
-    Write-Log "SUCCESS: Pushed to GitHub!"
+# ========== Push to Gitee ==========
+Write-Log "--- Pushing to Gitee ---"
+$hasGiteeRemote = git remote | Where-Object { $_ -eq $GiteeRemote }
+if ($hasGiteeRemote) {
+    # Pull first
+    Write-Log "Pulling latest from Gitee..."
+    $pullResult = git pull --rebase $GiteeRemote main 2>&1
+    $pullResult | ForEach-Object { Write-Log "git pull (Gitee): $_" }
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "WARNING: Gitee pull may have conflicts (exit code: $LASTEXITCODE)"
+    }
+    
+    # Push
+    Write-Log "Pushing to Gitee..."
+    $pushResult = git push $GiteeRemote main 2>&1
+    $pushResult | ForEach-Object { Write-Log "git push (Gitee): $_" }
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Log "SUCCESS: Pushed to Gitee!"
+    } else {
+        Write-Log "FAILED: Gitee push failed (exit code: $LASTEXITCODE)"
+    }
 } else {
-    Write-Log "FAILED: Push failed (exit code: $LASTEXITCODE)"
-    Write-Log "Please check network connection and GitHub authentication"
+    Write-Log "SKIP: Gitee remote '$GiteeRemote' not found"
 }
 
 Write-Log "===== Sync Complete ====="
