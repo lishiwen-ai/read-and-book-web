@@ -13,7 +13,7 @@
         <span>BOOK & WRITE</span>
       </a>
       <nav class="topnav" aria-label="主导航">
-        <a class="active" href="./dashboard.html">工作台</a>
+        <a class="active" href="./dashboard.html" id="workspace-link">工作台</a>
         <a href="#" id="notes-link">随笔</a>
         <a href="#" id="history-link">阅读历史</a>
       </nav>
@@ -54,7 +54,7 @@
         </div>
       </section>
 
-      <section class="section-heading">
+      <section class="section-heading" id="collection-heading">
         <div>
           <p class="eyebrow">COLLECTION</p>
           <h2>我的作品</h2>
@@ -68,6 +68,32 @@
       <section class="work-grid" id="work-grid" aria-live="polite"></section>
       <p class="empty-state hidden" id="empty-state">还没有作品，先建立一个故事吧。</p>
       <p class="error-state hidden" id="error-state"></p>
+
+      <section class="notes-section hidden" id="notes-section" aria-label="随笔">
+        <div class="notes-heading">
+          <div>
+            <p class="eyebrow">IDEA DRAWER</p>
+            <h2>随笔</h2>
+            <p class="notes-copy">把还没有成形的片段、人物和情节先留在这里。</p>
+          </div>
+          <button class="primary-button" id="new-note-button" type="button">
+            <span class="plus" aria-hidden="true">+</span>
+            新建随笔
+          </button>
+        </div>
+        <div class="notes-toolbar">
+          <label class="search-box note-search">
+            <span aria-hidden="true">⌕</span>
+            <input id="note-search" type="search" placeholder="搜索随笔" aria-label="搜索随笔" />
+          </label>
+          <label class="tag-filter">
+            <span>标签</span>
+            <input id="note-tag-filter" type="text" placeholder="例如：悬疑" aria-label="按标签筛选" />
+          </label>
+        </div>
+        <section class="note-list" id="note-list" aria-live="polite"></section>
+        <p class="empty-state hidden" id="notes-empty-state">还没有随笔，先记下一个灵感吧。</p>
+      </section>
     </main>
 
     <dialog class="work-dialog" id="work-dialog">
@@ -102,6 +128,32 @@
           <button class="danger-button" id="confirm-delete-work" type="button">删除作品</button>
         </div>
       </div>
+    </dialog>
+    <dialog class="note-dialog" id="note-dialog">
+      <form id="note-form">
+        <button class="close-button" id="close-note-dialog" type="button" aria-label="关闭">×</button>
+        <p class="eyebrow">NEW NOTE</p>
+        <h2 id="note-dialog-title">记下一则随笔</h2>
+        <p class="dialog-copy">先把想法留下来，之后可以再把它发展成章节。</p>
+        <label class="dialog-field">
+          <span>标题</span>
+          <input id="note-title" type="text" maxlength="200" placeholder="例如：雁门驿的铜牌" required />
+        </label>
+        <label class="dialog-field">
+          <span>内容</span>
+          <textarea id="note-content" maxlength="200000" placeholder="写下一个画面、对白或尚未完成的想法。" required></textarea>
+        </label>
+        <label class="dialog-field">
+          <span>标签 <small>用逗号分隔</small></span>
+          <input id="note-tags" type="text" maxlength="500" placeholder="灵感片段，悬疑" />
+        </label>
+        <fieldset class="note-work-field">
+          <legend>关联作品 <small>可选</small></legend>
+          <div id="note-work-options" class="note-work-options"></div>
+        </fieldset>
+        <p class="dialog-message" id="note-dialog-message" role="status"></p>
+        <button class="primary-button full-button" id="save-note-submit" type="submit">保存随笔</button>
+      </form>
     </dialog>
     <dialog class="settings-dialog" id="ai-settings-dialog">
       <form id="ai-settings-form">

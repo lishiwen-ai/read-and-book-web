@@ -353,6 +353,17 @@ async def health_check() -> dict[str, str]:
     return {"status": "ok", "database": "connected"}
 
 
+@app.get("/")
+async def root() -> dict[str, str]:
+    return {
+        "name": "阅读辅助平台 API",
+        "status": "running",
+        "frontend": "http://127.0.0.1:8003/index.html",
+        "docs": "http://127.0.0.1:8000/docs",
+        "health": "http://127.0.0.1:8000/health",
+    }
+
+
 @app.post("/api/auth/register", response_model=AuthResponse, status_code=201)
 async def register(request: CreateUserRequest) -> AuthResponse:
     user = await insert_user(request)

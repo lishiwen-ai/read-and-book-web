@@ -19,7 +19,29 @@ const deleteWorkDialog = document.querySelector("#delete-work-dialog");
 const deleteWorkCopy = document.querySelector("#delete-work-copy");
 const cancelDeleteWork = document.querySelector("#cancel-delete-work");
 const confirmDeleteWork = document.querySelector("#confirm-delete-work");
+const collectionHeading = document.querySelector("#collection-heading");
+const notesSection = document.querySelector("#notes-section");
+const workspaceLink = document.querySelector("#workspace-link");
+const notesLink = document.querySelector("#notes-link");
+const newNoteButton = document.querySelector("#new-note-button");
+const noteSearch = document.querySelector("#note-search");
+const noteTagFilter = document.querySelector("#note-tag-filter");
+const noteList = document.querySelector("#note-list");
+const notesEmptyState = document.querySelector("#notes-empty-state");
+const noteDialog = document.querySelector("#note-dialog");
+const noteForm = document.querySelector("#note-form");
+const noteDialogTitle = document.querySelector("#note-dialog-title");
+const closeNoteDialog = document.querySelector("#close-note-dialog");
+const noteTitle = document.querySelector("#note-title");
+const noteContent = document.querySelector("#note-content");
+const noteTags = document.querySelector("#note-tags");
+const noteWorkOptions = document.querySelector("#note-work-options");
+const noteDialogMessage = document.querySelector("#note-dialog-message");
+const saveNoteSubmit = document.querySelector("#save-note-submit");
 let pendingWorkDeletion = null;
+let works = [];
+let notes = [];
+let editingNoteId = null;
 const closeDialogButton = document.querySelector("#close-work-dialog");
 const aiSettingsButton = document.querySelector("#ai-settings-button");
 const aiSettingsDialog = document.querySelector("#ai-settings-dialog");
@@ -148,6 +170,120 @@ function renderWorks(works) {
   });
 }
 
+function showWorkspaceView(view) {
+  const notesView = view === "notes";
+  collectionHeading.classList.toggle("hidden", notesView);
+  workGrid.classList.toggle("hidden", notesView);
+  emptyState.classList.toggle("hidden", notesView || workGrid.children.length !== 0);
+  notesSection.classList.toggle("hidden", !notesView);
+  workspaceLink.classList.toggle("active", !notesView);
+  notesLink.classList.toggle("active", notesView);
+  if (!notesView) errorState.classList.add("hidden");
+}
+
+function parseTags(value) {
+  return [...new Set(value.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean))].slice(0, 20);
+}
+
+function renderNoteWorkOptions(selectedIds = []) {
+  const selected = new Set(selectedIds);
+  if (!works.length) {
+    noteWorkOptions.innerHTML = `<span class="note-option-empty">暂无作品可关联</span>`;
+    return;
+  }
+  noteWorkOptions.innerHTML = works.map((work) => `
+    <label class="note-work-option">
+      <input type="checkbox" value="${work.id}" ${selected.has(work.id) ? "checked" : ""} />
+      <span>${escapeHtml(work.title)}</span>
+    </label>
+  `).join("");
+}
+
+function workTitleById(workId) {
+  return works.find((work) => work.id === workId)?.title || "未命名作品";
+}
+
+function renderNotes() {
+  const keyword = noteSearch.value.trim().toLowerCase();
+  const tagKeyword = noteTagFilter.value.trim().toLowerCase();
+  const filtered = notes.filter((note) => {
+    const matchesText = `${note.title} ${note.content} ${note.tags.join(" ")}`.toLowerCase().includes(keyword);
+    const matchesTag = !tagKeyword || note.tags.some((tag) => tag.toLowerCase().includes(tagKeyword));
+    return matchesText && matchesTag;
+  });
+  noteList.innerHTML = filtered.map((note) => `
+    <article class="note-card">
+      <div class="note-card-heading">
+        <div>
+          <h3>${escapeHtml(note.title)}</h3>
+          <div class="note-tags">${note.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+        </div>
+        <div class="note-actions">
+          <button class="note-edit-button" type="button" data-note-id="${note.id}" title="编辑随笔" aria-label="编辑随笔">编辑</button>
+          <button class="note-delete-button" type="button" data-note-id="${note.id}" title="删除随笔" aria-label="删除随笔">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+          </button>
+        </div>
+      </div>
+      <p class="note-content">${escapeHtml(note.content)}</p>
+      <div class="note-card-footer">
+        <span>${note.work_ids.length ? note.work_ids.map(workTitleById).map(escapeHtml).join(" · ") : "未关联作品"}</span>
+        <span>${note.content.replace(/\s/g, "").length} 字</span>
+      </div>
+    </article>
+  `).join("");
+  notesEmptyState.classList.toggle("hidden", filtered.length !== 0);
+  noteList.querySelectorAll(".note-edit-button").forEach((button) => {
+    button.addEventListener("click", () => openNoteDialog(notes.find((note) => note.id === button.dataset.noteId)));
+  });
+  noteList.querySelectorAll(".note-delete-button").forEach((button) => {
+    button.addEventListener("click", () => deleteNote(button.dataset.noteId));
+  });
+}
+
+async function loadNotes() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/notes`, { headers: authHeaders() });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "暂时无法读取随笔。");
+    notes = data;
+    renderNotes();
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+function openNoteDialog(note = null) {
+  editingNoteId = note?.id || null;
+  noteDialogTitle.textContent = note ? "编辑随笔" : "记下一则随笔";
+  noteTitle.value = note?.title || "";
+  noteContent.value = note?.content || "";
+  noteTags.value = note?.tags?.join("，") || "";
+  noteDialogMessage.textContent = "";
+  renderNoteWorkOptions(note?.work_ids || []);
+  noteDialog.showModal();
+  noteTitle.focus();
+}
+
+async function deleteNote(noteId) {
+  const note = notes.find((item) => item.id === noteId);
+  if (!note || !window.confirm(`确定删除随笔“${note.title}”？`)) return;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/notes/${noteId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || "删除随笔失败。");
+    }
+    notes = notes.filter((item) => item.id !== noteId);
+    renderNotes();
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
 async function deleteWork(workId, workTitle) {
   const confirmed = await requestWorkDeletion(workId, workTitle);
   if (!confirmed) return;
@@ -211,12 +347,12 @@ async function loadWorks() {
       return;
     }
     if (!response.ok) throw new Error("暂时无法读取作品列表。");
-    const works = await response.json();
+    works = await response.json();
     workCount.textContent = works.length;
     latestWork.textContent = works[0]?.title || "暂无";
     recentActivity.textContent = works.length ? "编辑作品" : "暂无记录";
     renderWorks(works);
-    searchInput.addEventListener("input", () => renderWorks(works));
+    renderNoteWorkOptions();
   } catch (error) {
     showError(error.message);
   }
@@ -269,6 +405,8 @@ logoutButton.addEventListener("click", () => {
   localStorage.removeItem("current_user");
   window.location.href = "./index.html";
 });
+
+searchInput.addEventListener("input", () => renderWorks(works));
 
 aiSettingsButton.addEventListener("click", () => {
   deepseekApiKey.value = "";
@@ -344,14 +482,68 @@ deleteAiKey.addEventListener("click", async () => {
   }
 });
 
-document.querySelector("#notes-link").addEventListener("click", (event) => {
+notesLink.addEventListener("click", (event) => {
   event.preventDefault();
-  showError("随笔面板将在作品工作台之后接入。");
+  showWorkspaceView("notes");
+  loadNotes();
+});
+
+workspaceLink.addEventListener("click", (event) => {
+  event.preventDefault();
+  showWorkspaceView("works");
+  renderWorks(works);
 });
 
 document.querySelector("#history-link").addEventListener("click", (event) => {
   event.preventDefault();
   showError("阅读历史模块将在书库数据接入后开放。");
+});
+
+newNoteButton.addEventListener("click", () => openNoteDialog());
+closeNoteDialog.addEventListener("click", () => noteDialog.close());
+noteDialog.addEventListener("cancel", () => noteDialog.close());
+noteSearch.addEventListener("input", renderNotes);
+noteTagFilter.addEventListener("input", renderNotes);
+
+noteForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const payload = {
+    title: noteTitle.value.trim(),
+    content: noteContent.value.trim(),
+    tags: parseTags(noteTags.value),
+    work_ids: [...noteWorkOptions.querySelectorAll("input:checked")].map((input) => input.value),
+  };
+  if (!payload.title || !payload.content) {
+    noteDialogMessage.textContent = "请填写标题和内容。";
+    return;
+  }
+  saveNoteSubmit.disabled = true;
+  saveNoteSubmit.textContent = "保存中...";
+  noteDialogMessage.textContent = "";
+  try {
+    const response = await fetch(
+      editingNoteId ? `${API_BASE_URL}/api/notes/${editingNoteId}` : `${API_BASE_URL}/api/notes`,
+      {
+        method: editingNoteId ? "PATCH" : "POST",
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "保存随笔失败。");
+    if (editingNoteId) {
+      notes = notes.map((note) => note.id === data.id ? data : note);
+    } else {
+      notes.unshift(data);
+    }
+    noteDialog.close();
+    renderNotes();
+  } catch (error) {
+    noteDialogMessage.textContent = error.message;
+  } finally {
+    saveNoteSubmit.disabled = false;
+    saveNoteSubmit.textContent = "保存随笔";
+  }
 });
 
 loadWorks();
