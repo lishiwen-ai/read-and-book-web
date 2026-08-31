@@ -67,3 +67,33 @@
 [2026-08-31 18:11:26] Changed files:
 [2026-08-31 18:11:26]    M auto-push.ps1
 [2026-08-31 18:11:26]    M git-auto-push.log
+[2026-08-31 18:11:26] git add: warning: in the working copy of 'auto-push.ps1', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 18:11:26] All changes added to staging area
+[2026-08-31 18:11:26] git commit: [main 2e96b69] Auto sync - 2026-08-31 18:11:26
+[2026-08-31 18:11:26] git commit:  2 files changed, 74 insertions(+), 26 deletions(-)
+[2026-08-31 18:11:26] --- Pushing to GitHub ---
+[2026-08-31 18:11:26] Pulling latest from GitHub...
+[2026-08-31 18:11:27] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 18:11:27] git pull (GitHub): error: Please commit or stash them.
+[2026-08-31 18:11:27] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-08-31 18:11:27] Pushing to GitHub...
+[2026-08-31 18:11:31] git push (GitHub): To https://github.com/lishiwen-ai/read-and-book-web.git
+[2026-08-31 18:11:31] git push (GitHub):    188878c..2e96b69  main -> main
+[2026-08-31 18:11:31] SUCCESS: Pushed to GitHub!
+[2026-08-31 18:11:31] --- Pushing to Gitee ---
+[2026-08-31 18:11:31] Pulling latest from Gitee...
+[2026-08-31 18:11:31] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 18:11:31] git pull (Gitee): error: Please commit or stash them.
+[2026-08-31 18:11:31] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-08-31 18:11:31] Pushing to Gitee...
+[2026-08-31 18:11:33] git push (Gitee): remote: Powered by [01;33mGITEE.COM [0m[1.1.23]        
+[2026-08-31 18:11:33] git push (Gitee): remote: Set trace flag 3b4d15a8        
+[2026-08-31 18:11:33] git push (Gitee): To https://gitee.com/lsw0427/read-and-book-web.git
+[2026-08-31 18:11:33] git push (Gitee):    188878c..2e96b69  main -> main
+[2026-08-31 18:11:33] SUCCESS: Pushed to Gitee!
+[2026-08-31 18:11:33] ===== Sync Complete =====
+[2026-08-31 18:21:23] ===== Start Auto Push Check (Dual Platform) =====
+[2026-08-31 18:21:23] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-08-31 18:21:24] File changes detected, starting sync...
+[2026-08-31 18:21:24] Changed files:
+[2026-08-31 18:21:24]    M git-auto-push.log
