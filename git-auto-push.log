@@ -27,3 +27,25 @@
 [2026-08-31 17:51:29]    M frontend/dashboard.html
 [2026-08-31 17:51:29]    M frontend/dashboard.js
 [2026-08-31 17:51:29]    M git-auto-push.log
+[2026-08-31 17:51:29] git add: warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 17:51:29] git add: warning: in the working copy of 'app/main.py', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 17:51:29] git add: warning: in the working copy of 'frontend/dashboard.css', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 17:51:29] git add: warning: in the working copy of 'frontend/dashboard.html', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 17:51:29] git add: warning: in the working copy of 'frontend/dashboard.js', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 17:51:29] All changes added to staging area
+[2026-08-31 17:51:29] git commit: [main f188cbb] Auto sync - 2026-08-31 17:51:29
+[2026-08-31 17:51:29] git commit:  6 files changed, 64 insertions(+), 140 deletions(-)
+[2026-08-31 17:51:29] Pulling latest from remote...
+[2026-08-31 17:51:30] git pull: error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 17:51:30] git pull: error: Please commit or stash them.
+[2026-08-31 17:51:30] WARNING: Pull may have conflicts (exit code: 128)
+[2026-08-31 17:51:30] Pushing to GitHub...
+[2026-08-31 17:51:34] git push: To https://github.com/lishiwen-ai/read-and-book-web.git
+[2026-08-31 17:51:34] git push:    57ec9ea..f188cbb  main -> main
+[2026-08-31 17:51:34] SUCCESS: Pushed to GitHub!
+[2026-08-31 17:51:34] ===== Sync Complete =====
+[2026-08-31 18:01:59] ===== Start Auto Push Check =====
+[2026-08-31 18:01:59] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-08-31 18:01:59] File changes detected, starting sync...
+[2026-08-31 18:01:59] Changed files:
+[2026-08-31 18:01:59]    M git-auto-push.log
