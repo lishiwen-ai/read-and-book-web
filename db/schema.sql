@@ -84,12 +84,6 @@ CREATE TABLE IF NOT EXISTS notes (
 CREATE INDEX IF NOT EXISTS idx_notes_user_updated
     ON notes(user_id, updated_at DESC);
 
-CREATE TABLE IF NOT EXISTS note_work_links (
-    note_id UUID NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
-    work_id UUID NOT NULL REFERENCES works(id) ON DELETE CASCADE,
-    PRIMARY KEY (note_id, work_id)
-);
-
 CREATE TABLE IF NOT EXISTS ai_conversations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
