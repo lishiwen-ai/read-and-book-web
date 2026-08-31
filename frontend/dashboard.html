@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>工作台 · 书写与阅读</title>
-    <link rel="stylesheet" href="./dashboard.css?v=notes-no-link-20260831" />
+    <link rel="stylesheet" href="./dashboard.css?v=workspace-restored-20260831" />
   </head>
   <body>
     <header class="topbar">
@@ -13,8 +13,9 @@
         <span>BOOK & WRITE</span>
       </a>
       <nav class="topnav" aria-label="主导航">
-        <a class="active" href="./dashboard.html" id="workspace-link">作品</a>
+        <a class="active" href="./dashboard.html" id="workspace-link">工作台</a>
         <a href="#" id="notes-link">随笔</a>
+        <a href="#" id="history-link">阅读历史</a>
       </nav>
       <div class="user-menu">
         <span class="user-greeting" id="user-greeting">你好</span>
@@ -26,21 +27,42 @@
     </header>
 
     <main class="dashboard">
+      <section class="welcome-row">
+        <div>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+          <h1>今天，想写点什么？</h1>
+          <p class="welcome-copy">把灵感放在手边，把正在发生的故事继续下去。</p>
+        </div>
+        <button class="primary-button" id="new-work-button" type="button">
+          <span class="plus" aria-hidden="true">+</span>
+          新建作品
+        </button>
+      </section>
+
+      <section class="stats-row" aria-label="作品概览">
+        <div class="stat">
+          <span class="stat-label">我的作品</span>
+          <strong id="work-count">0</strong>
+        </div>
+        <div class="stat">
+          <span class="stat-label">最近编辑</span>
+          <strong id="latest-work">暂无</strong>
+        </div>
+        <div class="stat stat-accent">
+          <span class="stat-label">最近活动</span>
+          <strong id="recent-activity">暂无记录</strong>
+        </div>
+      </section>
+
       <section class="section-heading" id="collection-heading">
         <div>
           <p class="eyebrow">COLLECTION</p>
-          <h2>作品</h2>
+          <h2>我的作品</h2>
         </div>
-        <div class="collection-actions">
-          <label class="search-box">
-            <span aria-hidden="true">⌕</span>
-            <input id="work-search" type="search" placeholder="搜索作品" aria-label="搜索作品" />
-          </label>
-          <button class="primary-button" id="new-work-button" type="button">
-            <span class="plus" aria-hidden="true">+</span>
-            新建作品
-          </button>
-        </div>
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="work-search" type="search" placeholder="搜索作品" aria-label="搜索作品" />
+        </label>
       </section>
 
       <section class="work-grid" id="work-grid" aria-live="polite"></section>
@@ -155,6 +177,6 @@
         </div>
       </form>
     </dialog>
-    <script src="./dashboard.js?v=notes-no-link-20260831"></script>
+    <script src="./dashboard.js?v=workspace-restored-20260831"></script>
   </body>
 </html>

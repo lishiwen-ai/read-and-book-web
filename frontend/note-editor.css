@@ -7,6 +7,48 @@
 .note-editor-layout .note-writing-pane {
   grid-column: 1;
   min-width: 0;
+  padding-top: 42px;
+}
+
+.note-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+}
+
+.note-intro-copy h2 {
+  font-size: 28px;
+}
+
+.note-intro-copy p {
+  margin: 12px 0 0;
+  max-width: 38rem;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.note-intro-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.note-intro-badges span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 12px;
+  background: var(--wash);
+  color: #5f6c66;
+  font-size: 11px;
 }
 
 .note-tags-editor {
@@ -78,6 +120,15 @@
 @media (max-width: 700px) {
   .note-editor-layout .note-writing-pane {
     padding: 35px 20px 24px;
+  }
+
+  .note-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .note-intro-badges {
+    justify-content: flex-start;
   }
 
   .note-tags-editor {

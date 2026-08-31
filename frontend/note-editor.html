@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>随笔编辑器 · 书写与阅读</title>
     <link rel="stylesheet" href="./editor.css" />
-    <link rel="stylesheet" href="./note-editor.css?v=note-editor-20260831" />
+    <link rel="stylesheet" href="./note-editor.css?v=note-editor-redesign-20260831" />
   </head>
   <body class="note-editor-page ai-open">
     <header class="editor-topbar">
@@ -26,6 +26,18 @@
 
     <main class="note-editor-layout">
       <section class="writing-pane note-writing-pane">
+        <section class="note-intro" aria-label="随笔概览">
+          <div class="note-intro-copy">
+            <p class="eyebrow">IDEA DRAWER</p>
+            <h2>随笔</h2>
+            <p>把还没长成章节的句子、画面和对白先放在这里。</p>
+          </div>
+          <div class="note-intro-badges" aria-hidden="true">
+            <span>纯文本记录</span>
+            <span>自动保存</span>
+            <span>AI 只看当前随笔</span>
+          </div>
+        </section>
         <div class="writing-heading">
           <input id="note-title" class="chapter-title" type="text" placeholder="随笔标题" maxlength="200" />
           <div class="chapter-tools">
@@ -83,6 +95,6 @@
         </form>
       </aside>
     </main>
-    <script src="./note-editor.js?v=note-editor-20260831"></script>
+    <script src="./note-editor.js?v=note-editor-redesign-20260831"></script>
   </body>
 </html>
