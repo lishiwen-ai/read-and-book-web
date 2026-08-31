@@ -441,3 +441,35 @@
 [2026-08-31 21:21:19]    M frontend/dashboard.html
 [2026-08-31 21:21:19]    M frontend/dashboard.js
 [2026-08-31 21:21:20]    M git-auto-push.log
+[2026-08-31 21:21:20] git add: warning: in the working copy of 'frontend/dashboard.css', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 21:21:20] git add: warning: in the working copy of 'frontend/dashboard.html', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 21:21:20] git add: warning: in the working copy of 'frontend/dashboard.js', LF will be replaced by CRLF the next time Git touches it
+[2026-08-31 21:21:20] All changes added to staging area
+[2026-08-31 21:21:20] git commit: [main f1bafad] Auto sync - 2026-08-31 21:21:20
+[2026-08-31 21:21:20] git commit:  4 files changed, 257 insertions(+), 8 deletions(-)
+[2026-08-31 21:21:20] --- Pushing to GitHub ---
+[2026-08-31 21:21:20] Pulling latest from GitHub...
+[2026-08-31 21:21:20] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 21:21:20] git pull (GitHub): error: Please commit or stash them.
+[2026-08-31 21:21:20] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-08-31 21:21:20] Pushing to GitHub...
+[2026-08-31 21:21:24] git push (GitHub): To https://github.com/lishiwen-ai/read-and-book-web.git
+[2026-08-31 21:21:24] git push (GitHub):    a4fd9ce..f1bafad  main -> main
+[2026-08-31 21:21:24] SUCCESS: Pushed to GitHub!
+[2026-08-31 21:21:24] --- Pushing to Gitee ---
+[2026-08-31 21:21:24] Pulling latest from Gitee...
+[2026-08-31 21:21:24] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 21:21:24] git pull (Gitee): error: Please commit or stash them.
+[2026-08-31 21:21:24] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-08-31 21:21:24] Pushing to Gitee...
+[2026-08-31 21:21:26] git push (Gitee): remote: Powered by [01;33mGITEE.COM [0m[1.1.23]        
+[2026-08-31 21:21:26] git push (Gitee): remote: Set trace flag 3c495f92        
+[2026-08-31 21:21:26] git push (Gitee): To https://gitee.com/lsw0427/read-and-book-web.git
+[2026-08-31 21:21:26] git push (Gitee):    a4fd9ce..f1bafad  main -> main
+[2026-08-31 21:21:26] SUCCESS: Pushed to Gitee!
+[2026-08-31 21:21:26] ===== Sync Complete =====
+[2026-08-31 21:31:20] ===== Start Auto Push Check (Dual Platform) =====
+[2026-08-31 21:31:20] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-08-31 21:31:20] File changes detected, starting sync...
+[2026-08-31 21:31:20] Changed files:
+[2026-08-31 21:31:20]    M git-auto-push.log
