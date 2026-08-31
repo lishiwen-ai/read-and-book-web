@@ -126,3 +126,34 @@
 [2026-08-31 18:31:23] File changes detected, starting sync...
 [2026-08-31 18:31:23] Changed files:
 [2026-08-31 18:31:23]    M git-auto-push.log
+[2026-08-31 18:31:23] All changes added to staging area
+[2026-08-31 18:31:24] git commit: [main b2be054] Auto sync - 2026-08-31 18:31:23
+[2026-08-31 18:31:24] git commit:  1 file changed, 29 insertions(+)
+[2026-08-31 18:31:24] --- Pushing to GitHub ---
+[2026-08-31 18:31:24] Pulling latest from GitHub...
+[2026-08-31 18:31:24] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 18:31:24] git pull (GitHub): error: Please commit or stash them.
+[2026-08-31 18:31:24] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-08-31 18:31:24] Pushing to GitHub...
+[2026-08-31 18:31:27] git push (GitHub): To https://github.com/lishiwen-ai/read-and-book-web.git
+[2026-08-31 18:31:27] git push (GitHub):    1f002fb..b2be054  main -> main
+[2026-08-31 18:31:27] SUCCESS: Pushed to GitHub!
+[2026-08-31 18:31:27] --- Pushing to Gitee ---
+[2026-08-31 18:31:27] Pulling latest from Gitee...
+[2026-08-31 18:31:28] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-08-31 18:31:28] git pull (Gitee): error: Please commit or stash them.
+[2026-08-31 18:31:28] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-08-31 18:31:28] Pushing to Gitee...
+[2026-08-31 18:31:30] git push (Gitee): remote: Powered by [01;33mGITEE.COM [0m[1.1.23]        
+[2026-08-31 18:31:30] git push (Gitee): remote: Set trace flag 174e1194        
+[2026-08-31 18:31:30] git push (Gitee): To https://gitee.com/lsw0427/read-and-book-web.git
+[2026-08-31 18:31:30] git push (Gitee):    1f002fb..b2be054  main -> main
+[2026-08-31 18:31:30] SUCCESS: Pushed to Gitee!
+[2026-08-31 18:31:30] ===== Sync Complete =====
+[2026-08-31 18:41:29] ===== Start Auto Push Check (Dual Platform) =====
+[2026-08-31 18:41:29] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-08-31 18:41:29] File changes detected, starting sync...
+[2026-08-31 18:41:29] Changed files:
+[2026-08-31 18:41:29]    M frontend/dashboard.css
+[2026-08-31 18:41:29]    M frontend/dashboard.html
+[2026-08-31 18:41:29]    M git-auto-push.log
