@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>随笔编辑器 · 书写与阅读</title>
+    <link rel="stylesheet" href="./editor.css" />
+    <link rel="stylesheet" href="./note-editor.css?v=note-editor-20260831" />
+  </head>
+  <body class="note-editor-page ai-open">
+    <header class="editor-topbar">
+      <a class="back-link" href="./dashboard.html" aria-label="返回随笔">← <span>随笔</span></a>
+      <div class="editor-title">
+        <span class="editor-kicker">NOTE DESK</span>
+        <strong id="note-heading-title">加载中...</strong>
+      </div>
+      <div class="editor-user">
+        <span id="save-status">未保存</span>
+        <button id="ai-toggle" class="ai-toggle" type="button" title="关闭 AI 创作助手" aria-label="关闭 AI 创作助手" aria-expanded="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"></path><circle cx="12" cy="12" r="3.5"></circle></svg>
+          <span>AI 助手</span>
+        </button>
+        <button id="logout-button" type="button" title="退出登录" aria-label="退出登录">退出</button>
+      </div>
+    </header>
+
+    <main class="note-editor-layout">
+      <section class="writing-pane note-writing-pane">
+        <div class="writing-heading">
+          <input id="note-title" class="chapter-title" type="text" placeholder="随笔标题" maxlength="200" />
+          <div class="chapter-tools">
+            <span id="word-count">0 字</span>
+            <button id="save-note" class="editor-action save-button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v6h8V4M8 20v-6h8v6"></path></svg>
+              <span>保存随笔</span>
+            </button>
+          </div>
+        </div>
+        <label class="note-tags-editor">
+          <span>标签</span>
+          <input id="note-tags" type="text" maxlength="500" placeholder="用逗号分隔，例如：灵感片段，悬疑" />
+        </label>
+        <textarea id="note-content" placeholder="从这里开始写下这一则随笔..."></textarea>
+        <div class="writing-footer">
+          <span>随笔 · 纯文本编辑</span>
+          <span id="note-editor-message" class="editor-message" role="status"></span>
+        </div>
+      </section>
+
+      <aside class="ai-panel" id="ai-panel" aria-label="AI 创作助手">
+        <div class="ai-panel-heading">
+          <div>
+            <p class="eyebrow">WRITING PARTNER</p>
+            <h2>AI 创作助手</h2>
+          </div>
+          <button class="dialog-close" id="ai-close" type="button" aria-label="关闭 AI 助手">×</button>
+        </div>
+        <div class="ai-settings">
+          <label>
+            <span>创作任务</span>
+            <select id="ai-mode">
+              <option value="续写">续写</option>
+              <option value="润色">润色</option>
+              <option value="扩写">扩写</option>
+              <option value="情节梳理">情节梳理</option>
+              <option value="标题建议">标题建议</option>
+            </select>
+          </label>
+          <span class="ai-context">只参考当前随笔内容</span>
+        </div>
+        <div class="ai-messages" id="ai-messages" aria-live="polite">
+          <div class="ai-message assistant">我会只围绕这则随笔协助你。你可以让我续写、润色，或者把一个模糊的念头整理成更清楚的片段。</div>
+        </div>
+        <form class="ai-composer" id="ai-form">
+          <textarea id="ai-input" maxlength="8000" placeholder="例如：把这个片段扩写成一个有悬念的开场。"></textarea>
+          <div class="ai-composer-footer">
+            <span>Ctrl + Enter 发送</span>
+            <button class="editor-action save-button" id="ai-send" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 16-8-4 16-4-6-8-2Z"></path><path d="m12 14 4-6"></path></svg>
+              <span>发送</span>
+            </button>
+          </div>
+        </form>
+      </aside>
+    </main>
+    <script src="./note-editor.js?v=note-editor-20260831"></script>
+  </body>
+</html>

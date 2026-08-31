@@ -212,7 +212,7 @@ function renderNotes() {
     return matchesText && matchesTag;
   });
   noteList.innerHTML = filtered.map((note) => `
-    <article class="note-card">
+    <article class="note-card" data-note-id="${note.id}" tabindex="0" role="link" aria-label="打开随笔：${escapeHtml(note.title)}">
       <div class="note-card-heading">
         <div>
           <h3>${escapeHtml(note.title)}</h3>
@@ -228,7 +228,7 @@ function renderNotes() {
       <p class="note-content">${escapeHtml(note.content)}</p>
       <div class="note-card-footer">
         <span>${note.work_ids.length ? note.work_ids.map(workTitleById).map(escapeHtml).join(" · ") : "未关联作品"}</span>
-        <span>${note.content.replace(/\s/g, "").length} 字</span>
+        <button class="note-open-button" type="button" data-note-id="${note.id}">打开随笔 <span>→</span></button>
       </div>
     </article>
   `).join("");
@@ -238,6 +238,25 @@ function renderNotes() {
   });
   noteList.querySelectorAll(".note-delete-button").forEach((button) => {
     button.addEventListener("click", () => deleteNote(button.dataset.noteId));
+  });
+  noteList.querySelectorAll(".note-open-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      window.location.href = `./note-editor.html?note_id=${encodeURIComponent(button.dataset.noteId)}`;
+    });
+  });
+  noteList.querySelectorAll(".note-card").forEach((card) => {
+    const open = () => {
+      window.location.href = `./note-editor.html?note_id=${encodeURIComponent(card.dataset.noteId)}`;
+    };
+    card.addEventListener("click", (event) => {
+      if (!event.target.closest("button")) open();
+    });
+    card.addEventListener("keydown", (event) => {
+      if ((event.key === "Enter" || event.key === " ") && !event.target.closest("button")) {
+        event.preventDefault();
+        open();
+      }
+    });
   });
 }
 
