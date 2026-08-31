@@ -41,12 +41,12 @@ uvicorn app.main:app --reload
 
 ## 随笔接口
 
-随笔是全局灵感碎片箱，可关联零个或多个自己的作品：
+随笔是全局灵感碎片箱：
 
 - `POST /api/notes`：创建随笔
-- `GET /api/notes`：查看随笔，支持 `tag`、`search`、`work_id` 筛选
+- `GET /api/notes`：查看随笔，支持 `tag`、`search` 筛选
 - `GET /api/notes/{note_id}`：查看详情
-- `PATCH /api/notes/{note_id}`：修改随笔和关联作品
+- `PATCH /api/notes/{note_id}`：修改随笔
 - `DELETE /api/notes/{note_id}`：删除随笔
 
 创建示例：
@@ -55,8 +55,7 @@ uvicorn app.main:app --reload
 {
   "title": "雁门驿的铜牌",
   "content": "沈砚发现铜牌背面刻着一个已经磨损的军号。",
-  "tags": ["灵感片段", "悬疑"],
-  "work_ids": []
+  "tags": ["灵感片段", "悬疑"]
 }
 ```
 

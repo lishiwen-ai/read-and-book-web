@@ -158,14 +158,12 @@ class CreateNoteRequest(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     content: str = Field(min_length=1, max_length=200_000)
     tags: list[str] = Field(default_factory=list, max_length=20)
-    work_ids: list[UUID] = Field(default_factory=list, max_length=20)
 
 
 class UpdateNoteRequest(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     content: str | None = Field(default=None, min_length=1, max_length=200_000)
     tags: list[str] | None = Field(default=None, max_length=20)
-    work_ids: list[UUID] | None = Field(default=None, max_length=20)
 
 
 class NoteResponse(BaseModel):
@@ -174,7 +172,6 @@ class NoteResponse(BaseModel):
     title: str
     content: str
     tags: list[str]
-    work_ids: list[UUID]
 
 
 def hash_password(password: str) -> str:
@@ -547,32 +544,12 @@ async def ensure_owned_work(connection: asyncpg.Connection, work_id: UUID, user_
         raise HTTPException(status_code=404, detail="作品不存在")
 
 
-async def ensure_owned_works(
-    connection: asyncpg.Connection,
-    work_ids: list[UUID],
-    user_id: UUID,
-) -> None:
-    unique_work_ids = list(dict.fromkeys(work_ids))
-    if not unique_work_ids:
-        return
-    count = await connection.fetchval(
-        "SELECT COUNT(*) FROM works WHERE user_id = $1 AND id = ANY($2::uuid[])",
-        user_id,
-        unique_work_ids,
-    )
-    if count != len(unique_work_ids):
-        raise HTTPException(status_code=404, detail="关联作品不存在或不属于当前用户")
-
-
 async def fetch_note(connection: asyncpg.Connection, note_id: UUID, user_id: UUID) -> NoteResponse:
     row = await connection.fetchrow(
         """
-        SELECT n.id, n.user_id, n.title, n.content, n.tags,
-               COALESCE(array_agg(nwl.work_id) FILTER (WHERE nwl.work_id IS NOT NULL), '{}') AS work_ids
+        SELECT n.id, n.user_id, n.title, n.content, n.tags
         FROM notes n
-        LEFT JOIN note_work_links nwl ON nwl.note_id = n.id
         WHERE n.id = $1 AND n.user_id = $2
-        GROUP BY n.id
         """,
         note_id,
         user_id,
@@ -587,26 +564,18 @@ async def create_note(
     request: CreateNoteRequest,
     current_user: UserResponse = Depends(get_current_user),
 ) -> NoteResponse:
-    work_ids = list(dict.fromkeys(request.work_ids))
     async with app.state.db_pool.acquire() as connection:
-        async with connection.transaction():
-            await ensure_owned_works(connection, work_ids, current_user.id)
-            row = await connection.fetchrow(
-                """
-                INSERT INTO notes (user_id, title, content, tags)
-                VALUES ($1, $2, $3, $4)
-                RETURNING id
-                """,
-                current_user.id,
-                request.title,
-                request.content,
-                request.tags,
-            )
-            if work_ids:
-                await connection.executemany(
-                    "INSERT INTO note_work_links (note_id, work_id) VALUES ($1, $2)",
-                    [(row["id"], work_id) for work_id in work_ids],
-                )
+        row = await connection.fetchrow(
+            """
+            INSERT INTO notes (user_id, title, content, tags)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id
+            """,
+            current_user.id,
+            request.title,
+            request.content,
+            request.tags,
+        )
         return await fetch_note(connection, row["id"], current_user.id)
 
 
@@ -614,7 +583,6 @@ async def create_note(
 async def list_notes(
     tag: str | None = None,
     search: str | None = None,
-    work_id: UUID | None = None,
     current_user: UserResponse = Depends(get_current_user),
 ) -> list[NoteResponse]:
     conditions = ["n.user_id = $1"]
@@ -625,20 +593,11 @@ async def list_notes(
     if search:
         args.append(f"%{search}%")
         conditions.append(f"(n.title ILIKE ${len(args)} OR n.content ILIKE ${len(args)})")
-    if work_id:
-        args.append(work_id)
-        conditions.append(
-            f"EXISTS (SELECT 1 FROM note_work_links filter_link "
-            f"WHERE filter_link.note_id = n.id AND filter_link.work_id = ${len(args)})"
-        )
     rows = await app.state.db_pool.fetch(
         f"""
-        SELECT n.id, n.user_id, n.title, n.content, n.tags,
-               COALESCE(array_agg(nwl.work_id) FILTER (WHERE nwl.work_id IS NOT NULL), '{{}}') AS work_ids
+        SELECT n.id, n.user_id, n.title, n.content, n.tags
         FROM notes n
-        LEFT JOIN note_work_links nwl ON nwl.note_id = n.id
         WHERE {" AND ".join(conditions)}
-        GROUP BY n.id
         ORDER BY n.updated_at DESC
         """,
         *args,
@@ -661,41 +620,31 @@ async def update_note(
     request: UpdateNoteRequest,
     current_user: UserResponse = Depends(get_current_user),
 ) -> NoteResponse:
-    if request.title is None and request.content is None and request.tags is None and request.work_ids is None:
+    if request.title is None and request.content is None and request.tags is None:
         raise HTTPException(status_code=400, detail="至少提供一个需要修改的字段")
-    work_ids = list(dict.fromkeys(request.work_ids or []))
     async with app.state.db_pool.acquire() as connection:
-        async with connection.transaction():
-            note_exists = await connection.fetchval(
-                "SELECT 1 FROM notes WHERE id = $1 AND user_id = $2",
-                note_id,
-                current_user.id,
-            )
-            if not note_exists:
-                raise HTTPException(status_code=404, detail="随笔不存在")
-            await ensure_owned_works(connection, work_ids, current_user.id)
-            await connection.execute(
-                """
-                UPDATE notes
-                SET title = COALESCE($1, title),
-                    content = COALESCE($2, content),
-                    tags = COALESCE($3, tags),
-                    updated_at = NOW()
-                WHERE id = $4 AND user_id = $5
-                """,
-                request.title,
-                request.content,
-                request.tags,
-                note_id,
-                current_user.id,
-            )
-            if request.work_ids is not None:
-                await connection.execute("DELETE FROM note_work_links WHERE note_id = $1", note_id)
-                if work_ids:
-                    await connection.executemany(
-                        "INSERT INTO note_work_links (note_id, work_id) VALUES ($1, $2)",
-                        [(note_id, work_id) for work_id in work_ids],
-                    )
+        note_exists = await connection.fetchval(
+            "SELECT 1 FROM notes WHERE id = $1 AND user_id = $2",
+            note_id,
+            current_user.id,
+        )
+        if not note_exists:
+            raise HTTPException(status_code=404, detail="随笔不存在")
+        await connection.execute(
+            """
+            UPDATE notes
+            SET title = COALESCE($1, title),
+                content = COALESCE($2, content),
+                tags = COALESCE($3, tags),
+                updated_at = NOW()
+            WHERE id = $4 AND user_id = $5
+            """,
+            request.title,
+            request.content,
+            request.tags,
+            note_id,
+            current_user.id,
+        )
         return await fetch_note(connection, note_id, current_user.id)
 
 

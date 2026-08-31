@@ -411,8 +411,7 @@ h2 { font-size: 26px; }
 }
 .note-card-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 14px;
   margin-top: 18px;
   border-top: 1px solid var(--line);
@@ -420,7 +419,6 @@ h2 { font-size: 26px; }
   color: #a0aaa4;
   font-size: 10px;
 }
-.note-card-footer span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .note-open-button {
   flex: 0 0 auto;
   border: 0;
@@ -444,24 +442,6 @@ h2 { font-size: 26px; }
 .note-dialog form { position: relative; padding: 40px; }
 .note-dialog h2 { font-size: 28px; }
 .note-dialog .dialog-field textarea { min-height: 220px; line-height: 1.8; }
-.note-work-field { margin: 22px 0 0; border: 1px solid var(--line); border-radius: 3px; padding: 14px 15px 15px; }
-.note-work-field legend { margin-bottom: 9px; color: #56635d; font-size: 12px; font-weight: 600; }
-.note-work-field legend small { color: #a1aaa5; font-weight: 400; }
-.note-work-options { display: flex; flex-wrap: wrap; gap: 8px; }
-.note-work-option {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  padding: 8px 10px;
-  color: #596760;
-  font-size: 11px;
-}
-.note-work-option:has(input:checked) { border-color: #b8d4cc; background: var(--teal-light); color: var(--teal); }
-.note-work-option input { accent-color: var(--teal); }
-.note-option-empty { color: var(--muted); font-size: 11px; }
-
 .work-dialog {
   width: min(460px, calc(100% - 32px));
   border: 0;

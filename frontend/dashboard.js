@@ -35,7 +35,6 @@ const closeNoteDialog = document.querySelector("#close-note-dialog");
 const noteTitle = document.querySelector("#note-title");
 const noteContent = document.querySelector("#note-content");
 const noteTags = document.querySelector("#note-tags");
-const noteWorkOptions = document.querySelector("#note-work-options");
 const noteDialogMessage = document.querySelector("#note-dialog-message");
 const saveNoteSubmit = document.querySelector("#save-note-submit");
 let pendingWorkDeletion = null;
@@ -185,24 +184,6 @@ function parseTags(value) {
   return [...new Set(value.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean))].slice(0, 20);
 }
 
-function renderNoteWorkOptions(selectedIds = []) {
-  const selected = new Set(selectedIds);
-  if (!works.length) {
-    noteWorkOptions.innerHTML = `<span class="note-option-empty">暂无作品可关联</span>`;
-    return;
-  }
-  noteWorkOptions.innerHTML = works.map((work) => `
-    <label class="note-work-option">
-      <input type="checkbox" value="${work.id}" ${selected.has(work.id) ? "checked" : ""} />
-      <span>${escapeHtml(work.title)}</span>
-    </label>
-  `).join("");
-}
-
-function workTitleById(workId) {
-  return works.find((work) => work.id === workId)?.title || "未命名作品";
-}
-
 function renderNotes() {
   const keyword = noteSearch.value.trim().toLowerCase();
   const tagKeyword = noteTagFilter.value.trim().toLowerCase();
@@ -227,7 +208,6 @@ function renderNotes() {
       </div>
       <p class="note-content">${escapeHtml(note.content)}</p>
       <div class="note-card-footer">
-        <span>${note.work_ids.length ? note.work_ids.map(workTitleById).map(escapeHtml).join(" · ") : "未关联作品"}</span>
         <button class="note-open-button" type="button" data-note-id="${note.id}">打开随笔 <span>→</span></button>
       </div>
     </article>
@@ -279,7 +259,6 @@ function openNoteDialog(note = null) {
   noteContent.value = note?.content || "";
   noteTags.value = note?.tags?.join("，") || "";
   noteDialogMessage.textContent = "";
-  renderNoteWorkOptions(note?.work_ids || []);
   noteDialog.showModal();
   noteTitle.focus();
 }
@@ -371,7 +350,6 @@ async function loadWorks() {
     latestWork.textContent = works[0]?.title || "暂无";
     recentActivity.textContent = works.length ? "编辑作品" : "暂无记录";
     renderWorks(works);
-    renderNoteWorkOptions();
   } catch (error) {
     showError(error.message);
   }
@@ -530,7 +508,6 @@ noteForm.addEventListener("submit", async (event) => {
     title: noteTitle.value.trim(),
     content: noteContent.value.trim(),
     tags: parseTags(noteTags.value),
-    work_ids: [...noteWorkOptions.querySelectorAll("input:checked")].map((input) => input.value),
   };
   if (!payload.title || !payload.content) {
     noteDialogMessage.textContent = "请填写标题和内容。";
