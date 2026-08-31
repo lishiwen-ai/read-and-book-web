@@ -39,13 +39,25 @@ class ChatResponse(BaseModel):
 
 
 class AiSettingsRequest(BaseModel):
-    api_key: str = Field(min_length=10, max_length=300)
+    api_key: str | None = Field(default=None, max_length=300)
+    model: str = Field(min_length=1, max_length=100)
+
+
+class AiSettingsTestRequest(BaseModel):
+    api_key: str | None = Field(default=None, max_length=300)
 
 
 class AiSettingsResponse(BaseModel):
     provider: str
     model: str
     configured: bool
+    available_models: list[str] = Field(default_factory=list)
+
+
+class AiSettingsTestResponse(BaseModel):
+    valid: bool
+    model: str
+    available_models: list[str] = Field(default_factory=list)
 
 
 class CreateUserRequest(BaseModel):
@@ -235,12 +247,8 @@ async def get_current_user(
     return UserResponse(**dict(row))
 
 
-def get_dify_config() -> tuple[str, str]:
-    api_key = os.getenv("DIFY_API_KEY")
-    base_url = os.getenv("DIFY_API_BASE_URL", "https://api.dify.ai/v1").rstrip("/")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="服务器尚未配置 DIFY_API_KEY")
-    return api_key, base_url
+def get_deepseek_base_url() -> str:
+    return os.getenv("DEEPSEEK_API_BASE_URL", "https://api.deepseek.com").rstrip("/")
 
 
 def get_ai_fernet() -> Fernet:
@@ -262,6 +270,40 @@ def decrypt_ai_key(encrypted_api_key: str) -> str:
         return get_ai_fernet().decrypt(encrypted_api_key.encode("utf-8")).decode("utf-8")
     except Exception as exc:
         raise HTTPException(status_code=500, detail="用户 AI 密钥无法解密") from exc
+
+
+async def fetch_deepseek_models(api_key: str) -> list[str]:
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.get(
+                f"{get_deepseek_base_url()}/models",
+                headers={"Authorization": f"Bearer {api_key}"},
+            )
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=503, detail="暂时无法连接 DeepSeek") from exc
+
+    if response.status_code == 401:
+        raise HTTPException(status_code=400, detail="DeepSeek API Key 无效")
+    if response.is_error:
+        raise HTTPException(status_code=502, detail="无法读取 DeepSeek 模型列表")
+
+    data = response.json()
+    models: list[str] = []
+    for item in data.get("data", []):
+        model_id = item.get("id")
+        if isinstance(model_id, str) and model_id:
+            models.append(model_id)
+    models = list(dict.fromkeys(models))
+    if not models:
+        raise HTTPException(status_code=502, detail="未获取到可用模型")
+    return models
+
+
+async def get_saved_ai_settings(connection: asyncpg.Connection, user_id: UUID) -> asyncpg.Record | None:
+    return await connection.fetchrow(
+        "SELECT encrypted_api_key, model FROM user_ai_settings WHERE user_id = $1",
+        user_id,
+    )
 
 
 @asynccontextmanager
@@ -340,13 +382,31 @@ async def get_ai_settings(
     current_user: UserResponse = Depends(get_current_user),
 ) -> AiSettingsResponse:
     async with app.state.db_pool.acquire() as connection:
-        row = await connection.fetchrow(
-            "SELECT provider, model FROM user_ai_settings WHERE user_id = $1",
-            current_user.id,
-        )
+        row = await get_saved_ai_settings(connection, current_user.id)
     if row is None:
         return AiSettingsResponse(provider="deepseek", model="deepseek-chat", configured=False)
-    return AiSettingsResponse(provider=row["provider"], model=row["model"], configured=True)
+    return AiSettingsResponse(provider="deepseek", model=row["model"], configured=True)
+
+
+@app.post("/api/settings/ai/test", response_model=AiSettingsTestResponse)
+async def test_ai_settings(
+    request: AiSettingsTestRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> AiSettingsTestResponse:
+    api_key = request.api_key.strip() if request.api_key else ""
+    if not api_key:
+        async with app.state.db_pool.acquire() as connection:
+            row = await get_saved_ai_settings(connection, current_user.id)
+        if row is None:
+            raise HTTPException(status_code=400, detail="请先输入 DeepSeek API Key")
+        api_key = decrypt_ai_key(row["encrypted_api_key"])
+        current_model = row["model"]
+    else:
+        current_model = ""
+
+    models = await fetch_deepseek_models(api_key)
+    selected_model = current_model if current_model else models[0]
+    return AiSettingsTestResponse(valid=True, model=selected_model, available_models=models)
 
 
 @app.put("/api/settings/ai", response_model=AiSettingsResponse)
@@ -354,23 +414,43 @@ async def save_ai_settings(
     request: AiSettingsRequest,
     current_user: UserResponse = Depends(get_current_user),
 ) -> AiSettingsResponse:
-    encrypted_api_key = encrypt_ai_key(request.api_key.strip())
+    async with app.state.db_pool.acquire() as connection:
+        row = await get_saved_ai_settings(connection, current_user.id)
+
+    api_key_input = request.api_key.strip() if request.api_key else ""
+
+    if api_key_input:
+        api_key = api_key_input
+        models = await fetch_deepseek_models(api_key)
+        if request.model not in models:
+            raise HTTPException(status_code=400, detail="所选模型不在当前密钥可用模型中，请先检测密钥")
+        encrypted_api_key = encrypt_ai_key(api_key)
+    else:
+        if row is None:
+            raise HTTPException(status_code=400, detail="请先输入 DeepSeek API Key")
+        api_key = decrypt_ai_key(row["encrypted_api_key"])
+        models = await fetch_deepseek_models(api_key)
+        if request.model not in models and request.model != row["model"]:
+            raise HTTPException(status_code=400, detail="所选模型不在当前密钥可用模型中，请先检测密钥")
+        encrypted_api_key = row["encrypted_api_key"]
+
     async with app.state.db_pool.acquire() as connection:
         row = await connection.fetchrow(
             """
             INSERT INTO user_ai_settings (user_id, provider, encrypted_api_key, model)
-            VALUES ($1, 'deepseek', $2, 'deepseek-chat')
+            VALUES ($1, 'deepseek', $2, $3)
             ON CONFLICT (user_id) DO UPDATE
             SET provider = 'deepseek',
                 encrypted_api_key = EXCLUDED.encrypted_api_key,
-                model = 'deepseek-chat',
+                model = EXCLUDED.model,
                 updated_at = NOW()
             RETURNING provider, model
             """,
             current_user.id,
             encrypted_api_key,
+            request.model,
         )
-    return AiSettingsResponse(provider=row["provider"], model=row["model"], configured=True)
+    return AiSettingsResponse(provider=row["provider"], model=row["model"], configured=True, available_models=models)
 
 
 @app.delete("/api/settings/ai", status_code=204)
@@ -911,7 +991,7 @@ async def chat_with_writing_agent(
     try:
         async with httpx.AsyncClient(timeout=60) as client:
             response = await client.post(
-                "https://api.deepseek.com/chat/completions",
+                f"{get_deepseek_base_url()}/chat/completions",
                 headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                 json=payload,
             )

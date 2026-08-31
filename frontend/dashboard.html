@@ -111,12 +111,21 @@
         <p class="dialog-copy">使用你自己的 DeepSeek API Key。密钥只会发送到本应用后端并加密保存。</p>
         <label class="dialog-field">
           <span>DeepSeek API Key</span>
-          <input id="deepseek-api-key" type="password" autocomplete="off" placeholder="sk-..." />
+          <div class="settings-row">
+            <input id="deepseek-api-key" type="password" autocomplete="off" placeholder="sk-..." />
+            <button class="secondary-button" id="test-ai-key" type="button">检测有效性</button>
+          </div>
+        </label>
+        <label class="dialog-field">
+          <span>模型选择</span>
+          <select id="deepseek-model" disabled>
+            <option value="">请先检测密钥</option>
+          </select>
         </label>
         <p class="settings-status" id="ai-settings-status" role="status"></p>
         <div class="settings-actions">
           <button class="secondary-button" id="delete-ai-key" type="button">删除密钥</button>
-          <button class="primary-button" id="save-ai-key" type="submit">保存密钥</button>
+          <button class="primary-button" id="save-ai-key" type="submit">保存设置</button>
         </div>
       </form>
     </dialog>

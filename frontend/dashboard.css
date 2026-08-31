@@ -354,6 +354,19 @@ h2 { font-size: 26px; }
 }
 .dialog-field textarea { min-height: 88px; resize: vertical; }
 .dialog-field input:focus, .dialog-field textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(29,119,114,.1); }
+.settings-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+.settings-row input { min-width: 0; }
+.dialog-field select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  outline: 0;
+  padding: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+}
+.dialog-field select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(29,119,114,.1); }
 .dialog-message { min-height: 17px; margin: 14px 0 8px; color: var(--coral); font-size: 12px; }
 .full-button { width: 100%; }
 .confirm-dialog {
@@ -384,6 +397,9 @@ h2 { font-size: 26px; }
 .settings-dialog h2 { margin: 8px 0 0; font-family: "Noto Serif SC", serif; font-size: 27px; }
 .settings-status { min-height: 18px; margin: 14px 0 0; color: var(--teal); font-size: 11px; }
 .settings-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.settings-actions .primary-button:disabled,
+.settings-actions .secondary-button:disabled,
+.settings-row .secondary-button:disabled { opacity: .5; cursor: not-allowed; }
 
 @media (max-width: 760px) {
   .topbar { grid-template-columns: 1fr auto; }

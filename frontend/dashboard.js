@@ -26,8 +26,17 @@ const aiSettingsDialog = document.querySelector("#ai-settings-dialog");
 const aiSettingsForm = document.querySelector("#ai-settings-form");
 const closeAiSettings = document.querySelector("#close-ai-settings");
 const deepseekApiKey = document.querySelector("#deepseek-api-key");
+const deepseekModel = document.querySelector("#deepseek-model");
+const testAiKeyButton = document.querySelector("#test-ai-key");
 const aiSettingsStatus = document.querySelector("#ai-settings-status");
 const deleteAiKey = document.querySelector("#delete-ai-key");
+const saveAiKey = document.querySelector("#save-ai-key");
+let aiState = {
+  configured: false,
+  model: "deepseek-chat",
+  availableModels: [],
+  validated: false,
+};
 
 if (!token || !currentUser) {
   window.location.href = "./index.html";
@@ -46,10 +55,58 @@ async function loadAiSettings() {
     const response = await fetch(`${API_BASE_URL}/api/settings/ai`, { headers: authHeaders() });
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || "无法读取 AI 配置。");
-    aiSettingsStatus.textContent = data.configured ? "DeepSeek 密钥已配置" : "尚未配置 DeepSeek 密钥";
+    aiState.configured = data.configured;
+    aiState.model = data.model || "deepseek-chat";
+    aiState.availableModels = data.available_models || [];
+    aiState.validated = data.configured;
+    deepseekApiKey.value = "";
+    syncModelOptions(data.available_models || [], data.configured ? aiState.model : "", data.configured ? "已保存的模型" : "请先检测密钥");
+    aiSettingsStatus.textContent = data.configured ? `已配置，当前模型：${aiState.model}` : "尚未配置 DeepSeek 密钥";
     deleteAiKey.disabled = !data.configured;
+    saveAiKey.disabled = !data.configured;
   } catch (error) {
     aiSettingsStatus.textContent = error.message;
+  }
+}
+
+function syncModelOptions(models, selectedModel, placeholderText = "请先检测密钥") {
+  const uniqueModels = [...new Set(models.filter(Boolean))];
+  const options = uniqueModels.length ? uniqueModels : (selectedModel ? [selectedModel] : []);
+  if (!options.length) {
+    deepseekModel.innerHTML = `<option value="">${placeholderText}</option>`;
+    deepseekModel.disabled = true;
+    return;
+  }
+  if (selectedModel && !options.includes(selectedModel)) options.unshift(selectedModel);
+  deepseekModel.innerHTML = options.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
+  deepseekModel.value = selectedModel && options.includes(selectedModel) ? selectedModel : options[0];
+  deepseekModel.disabled = false;
+}
+
+async function validateAiKey() {
+  const apiKey = deepseekApiKey.value.trim();
+  aiSettingsStatus.textContent = "正在检测密钥...";
+  testAiKeyButton.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings/ai/test`, {
+      method: "POST",
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: apiKey || null }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "密钥无效。");
+    aiState.validated = true;
+    aiState.availableModels = data.available_models || [];
+    aiState.model = data.model || aiState.model;
+    syncModelOptions(aiState.availableModels, aiState.model, "未获取到可用模型");
+    aiSettingsStatus.textContent = `密钥有效，已加载 ${aiState.availableModels.length} 个模型`;
+    deleteAiKey.disabled = false;
+    saveAiKey.disabled = false;
+  } catch (error) {
+    aiState.validated = false;
+    aiSettingsStatus.textContent = error.message;
+  } finally {
+    testAiKeyButton.disabled = false;
   }
 }
 
@@ -215,37 +272,56 @@ logoutButton.addEventListener("click", () => {
 
 aiSettingsButton.addEventListener("click", () => {
   deepseekApiKey.value = "";
+  aiState.validated = false;
   aiSettingsDialog.showModal();
-  loadAiSettings();
+  loadAiSettings().then(() => {
+    if (aiState.configured) validateAiKey();
+  });
 });
 closeAiSettings.addEventListener("click", () => aiSettingsDialog.close());
 aiSettingsDialog.addEventListener("cancel", () => aiSettingsDialog.close());
+deepseekApiKey.addEventListener("input", () => {
+  aiState.validated = false;
+  if (deepseekApiKey.value.trim()) {
+    aiSettingsStatus.textContent = "输入完成后请检测密钥有效性。";
+  }
+});
+testAiKeyButton.addEventListener("click", validateAiKey);
 aiSettingsForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const apiKey = deepseekApiKey.value.trim();
-  if (!apiKey) {
-    aiSettingsStatus.textContent = "请输入 DeepSeek API Key。";
+  const model = deepseekModel.value.trim();
+  if (!model) {
+    aiSettingsStatus.textContent = "请先选择一个模型。";
     return;
   }
-  const saveButton = document.querySelector("#save-ai-key");
-  saveButton.disabled = true;
-  saveButton.textContent = "保存中...";
+  if (apiKey && !aiState.validated) {
+    aiSettingsStatus.textContent = "请先检测密钥有效性。";
+    return;
+  }
+  saveAiKey.disabled = true;
+  saveAiKey.textContent = "保存中...";
   try {
     const response = await fetch(`${API_BASE_URL}/api/settings/ai`, {
       method: "PUT",
       headers: { ...authHeaders(), "Content-Type": "application/json" },
-      body: JSON.stringify({ api_key: apiKey }),
+      body: JSON.stringify({ api_key: apiKey || null, model }),
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || "保存 AI 密钥失败。");
     deepseekApiKey.value = "";
-    aiSettingsStatus.textContent = `${data.provider} 密钥已保存`;
+    aiState.configured = true;
+    aiState.model = data.model || model;
+    aiState.availableModels = data.available_models || aiState.availableModels;
+    aiState.validated = true;
+    syncModelOptions(aiState.availableModels, aiState.model, "已保存");
+    aiSettingsStatus.textContent = `${data.provider} 设置已保存`;
     deleteAiKey.disabled = false;
   } catch (error) {
     aiSettingsStatus.textContent = error.message;
   } finally {
-    saveButton.disabled = false;
-    saveButton.textContent = "保存密钥";
+    saveAiKey.disabled = false;
+    saveAiKey.textContent = "保存设置";
   }
 });
 deleteAiKey.addEventListener("click", async () => {
@@ -258,6 +334,10 @@ deleteAiKey.addEventListener("click", async () => {
       throw new Error(data.detail || "删除 AI 密钥失败。");
     }
     aiSettingsStatus.textContent = "DeepSeek 密钥已删除";
+    aiState = { configured: false, model: "deepseek-chat", availableModels: [], validated: false };
+    deepseekApiKey.value = "";
+    syncModelOptions([], "", "请先检测密钥");
+    saveAiKey.disabled = true;
   } catch (error) {
     aiSettingsStatus.textContent = error.message;
     deleteAiKey.disabled = false;

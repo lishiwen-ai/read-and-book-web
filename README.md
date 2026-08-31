@@ -1,6 +1,6 @@
 # 阅读辅助平台后端
 
-这个服务将前端的写作请求安全转发给 Dify。Dify API 密钥和 JWT 签名密钥仅保存在 `.env` 中，不能放进浏览器前端。
+这个服务会把前端的写作请求安全转发给 DeepSeek。用户自己的 AI 密钥只在工作台的 `AI 设置` 中配置，JWT 签名密钥和加密密钥仍然只保存在 `.env` 中，不能放进浏览器前端。
 
 ## 启动
 
@@ -14,8 +14,6 @@ Copy-Item .env.example .env
 notepad .env
 uvicorn app.main:app --reload
 ```
-
-在 `.env` 中把 `DIFY_API_KEY` 的值替换成你新生成的 Dify API 密钥并保存。不要把该文件上传到 GitHub。
 
 `JWT_SECRET_KEY` 必须是至少 32 个字符的随机字符串。修改 `.env` 后需要重启 Uvicorn。
 
@@ -72,7 +70,18 @@ uvicorn app.main:app --reload
 }
 ```
 
-接口成功后会返回 AI 回答和 Dify 的 `conversation_id`；前端应在后续请求中回传它以延续对话。
+接口成功后会返回 AI 回答。前端会保留会话字段以便后续扩展。
+
+## 用户自己的 DeepSeek 设置
+
+在工作台右上角打开 `AI 设置`，可以：
+
+1. 输入自己的 DeepSeek API Key
+2. 点击 `检测有效性` 拉取可用模型
+3. 选择模型并保存
+4. 随时删除密钥
+
+如果没有配置密钥，AI 助手会提示先完成设置。
 
 ## 作品编辑器
 
