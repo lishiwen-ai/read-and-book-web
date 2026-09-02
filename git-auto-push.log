@@ -1132,3 +1132,28 @@
 [2026-09-02 16:51:31] File changes detected, starting sync...
 [2026-09-02 16:51:31] Changed files:
 [2026-09-02 16:51:31]    M git-auto-push.log
+[2026-09-02 16:51:31] All changes added to staging area
+[2026-09-02 16:51:32] git commit: [main f628915] Auto sync - 2026-09-02 16:51:31
+[2026-09-02 16:51:32] git commit:  1 file changed, 25 insertions(+)
+[2026-09-02 16:51:32] --- Pushing to GitHub ---
+[2026-09-02 16:51:32] Pulling latest from GitHub...
+[2026-09-02 16:51:32] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-02 16:51:32] git pull (GitHub): error: Please commit or stash them.
+[2026-09-02 16:51:32] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-09-02 16:51:32] Pushing to GitHub...
+[2026-09-02 16:51:35] git push (GitHub): fatal: unable to access 'https://github.com/lishiwen-ai/read-and-book-web.git/': Failed to connect to github.com:443 over proxy 127.0.0.1 after 2041 ms: Could not connect to server
+[2026-09-02 16:51:35] FAILED: GitHub push failed (exit code: 128)
+[2026-09-02 16:51:35] --- Pushing to Gitee ---
+[2026-09-02 16:51:35] Pulling latest from Gitee...
+[2026-09-02 16:51:35] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-02 16:51:35] git pull (Gitee): error: Please commit or stash them.
+[2026-09-02 16:51:35] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-09-02 16:51:35] Pushing to Gitee...
+[2026-09-02 16:51:37] git push (Gitee): fatal: unable to access 'https://gitee.com/lsw0427/read-and-book-web.git/': Failed to connect to gitee.com:443 over proxy 127.0.0.1 after 2068 ms: Could not connect to server
+[2026-09-02 16:51:37] FAILED: Gitee push failed (exit code: 128)
+[2026-09-02 16:51:37] ===== Sync Complete =====
+[2026-09-02 21:22:08] ===== Start Auto Push Check (Dual Platform) =====
+[2026-09-02 21:22:08] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-09-02 21:22:09] File changes detected, starting sync...
+[2026-09-02 21:22:09] Changed files:
+[2026-09-02 21:22:09]    M git-auto-push.log
