@@ -3019,3 +3019,28 @@
 [2026-09-06 11:40:42] File changes detected, starting sync...
 [2026-09-06 11:40:42] Changed files:
 [2026-09-06 11:40:42]    M git-auto-push.log
+[2026-09-06 11:40:42] All changes added to staging area
+[2026-09-06 11:40:43] git commit: [main 058e31a] Auto sync - 2026-09-06 11:40:42
+[2026-09-06 11:40:43] git commit:  1 file changed, 29 insertions(+)
+[2026-09-06 11:40:43] --- Pushing to GitHub ---
+[2026-09-06 11:40:43] Pulling latest from GitHub...
+[2026-09-06 11:40:43] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-06 11:40:43] git pull (GitHub): error: Please commit or stash them.
+[2026-09-06 11:40:43] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-09-06 11:40:43] Pushing to GitHub...
+[2026-09-06 11:41:04] git push (GitHub): fatal: unable to access 'https://github.com/lishiwen-ai/read-and-book-web.git/': Recv failure: Connection was reset
+[2026-09-06 11:41:04] FAILED: GitHub push failed (exit code: 128)
+[2026-09-06 11:41:04] --- Pushing to Gitee ---
+[2026-09-06 11:41:05] Pulling latest from Gitee...
+[2026-09-06 11:41:05] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-06 11:41:05] git pull (Gitee): error: Please commit or stash them.
+[2026-09-06 11:41:05] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-09-06 11:41:05] Pushing to Gitee...
+[2026-09-06 11:41:34] git push (Gitee): fatal: unable to access 'https://gitee.com/lsw0427/read-and-book-web.git/': Could not resolve host: gitee.com
+[2026-09-06 11:41:34] FAILED: Gitee push failed (exit code: 128)
+[2026-09-06 11:41:34] ===== Sync Complete =====
+[2026-09-06 14:41:02] ===== Start Auto Push Check (Dual Platform) =====
+[2026-09-06 14:41:02] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-09-06 14:41:03] File changes detected, starting sync...
+[2026-09-06 14:41:03] Changed files:
+[2026-09-06 14:41:03]    M git-auto-push.log
