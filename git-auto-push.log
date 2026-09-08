@@ -4637,3 +4637,34 @@
 [2026-09-08 22:32:10] File changes detected, starting sync...
 [2026-09-08 22:32:10] Changed files:
 [2026-09-08 22:32:10]    M git-auto-push.log
+[2026-09-08 22:32:10] All changes added to staging area
+[2026-09-08 22:32:10] git commit: [main 5eef607] Auto sync - 2026-09-08 22:32:10
+[2026-09-08 22:32:10] git commit:  1 file changed, 28 insertions(+)
+[2026-09-08 22:32:10] --- Pushing to GitHub ---
+[2026-09-08 22:32:10] Pulling latest from GitHub...
+[2026-09-08 22:32:10] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-08 22:32:10] git pull (GitHub): error: Please commit or stash them.
+[2026-09-08 22:32:10] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-09-08 22:32:10] Pushing to GitHub...
+[2026-09-08 22:32:55] git push (GitHub): error: RPC failed; curl 28 Failed to connect to github.com:443 after 21070 ms: Could not connect to server
+[2026-09-08 22:32:55] git push (GitHub): send-pack: unexpected disconnect while reading sideband packet
+[2026-09-08 22:32:55] git push (GitHub): fatal: the remote end hung up unexpectedly
+[2026-09-08 22:32:55] git push (GitHub): Everything up-to-date
+[2026-09-08 22:32:55] FAILED: GitHub push failed (exit code: 1)
+[2026-09-08 22:32:55] --- Pushing to Gitee ---
+[2026-09-08 22:32:55] Pulling latest from Gitee...
+[2026-09-08 22:32:55] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-08 22:32:55] git pull (Gitee): error: Please commit or stash them.
+[2026-09-08 22:32:55] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-09-08 22:32:55] Pushing to Gitee...
+[2026-09-08 22:32:57] git push (Gitee): remote: Powered by [01;33mGITEE.COM [0m[1.1.23]        
+[2026-09-08 22:32:58] git push (Gitee): remote: Set trace flag 034e0598        
+[2026-09-08 22:32:58] git push (Gitee): To https://gitee.com/lsw0427/read-and-book-web.git
+[2026-09-08 22:32:58] git push (Gitee):    908894f..5eef607  main -> main
+[2026-09-08 22:32:58] SUCCESS: Pushed to Gitee!
+[2026-09-08 22:32:58] ===== Sync Complete =====
+[2026-09-08 22:41:58] ===== Start Auto Push Check (Dual Platform) =====
+[2026-09-08 22:41:58] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-09-08 22:41:58] File changes detected, starting sync...
+[2026-09-08 22:41:58] Changed files:
+[2026-09-08 22:41:58]    M git-auto-push.log
