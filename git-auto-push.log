@@ -5271,3 +5271,32 @@
 [2026-09-09 20:51:35] File changes detected, starting sync...
 [2026-09-09 20:51:35] Changed files:
 [2026-09-09 20:51:35]    M git-auto-push.log
+[2026-09-09 20:51:36] All changes added to staging area
+[2026-09-09 20:51:36] git commit: [main 70a96b4] Auto sync - 2026-09-09 20:51:36
+[2026-09-09 20:51:36] git commit:  1 file changed, 28 insertions(+)
+[2026-09-09 20:51:36] --- Pushing to GitHub ---
+[2026-09-09 20:51:36] Pulling latest from GitHub...
+[2026-09-09 20:51:36] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-09 20:51:36] git pull (GitHub): error: Please commit or stash them.
+[2026-09-09 20:51:36] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-09-09 20:51:36] Pushing to GitHub...
+[2026-09-09 20:51:41] git push (GitHub): To https://github.com/lishiwen-ai/read-and-book-web.git
+[2026-09-09 20:51:41] git push (GitHub):    cd1c002..70a96b4  main -> main
+[2026-09-09 20:51:41] SUCCESS: Pushed to GitHub!
+[2026-09-09 20:51:41] --- Pushing to Gitee ---
+[2026-09-09 20:51:41] Pulling latest from Gitee...
+[2026-09-09 20:51:41] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-09 20:51:41] git pull (Gitee): error: Please commit or stash them.
+[2026-09-09 20:51:41] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-09-09 20:51:41] Pushing to Gitee...
+[2026-09-09 20:51:43] git push (Gitee): remote: Powered by [01;33mGITEE.COM [0m[1.1.23]        
+[2026-09-09 20:51:43] git push (Gitee): remote: Set trace flag 674c28b5        
+[2026-09-09 20:51:43] git push (Gitee): To https://gitee.com/lsw0427/read-and-book-web.git
+[2026-09-09 20:51:43] git push (Gitee):    0f8f0f6..70a96b4  main -> main
+[2026-09-09 20:51:43] SUCCESS: Pushed to Gitee!
+[2026-09-09 20:51:43] ===== Sync Complete =====
+[2026-09-09 21:01:51] ===== Start Auto Push Check (Dual Platform) =====
+[2026-09-09 21:01:51] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-09-09 21:01:51] File changes detected, starting sync...
+[2026-09-09 21:01:51] Changed files:
+[2026-09-09 21:01:51]    M git-auto-push.log
