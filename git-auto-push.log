@@ -5473,3 +5473,31 @@
 [2026-09-09 22:31:33] File changes detected, starting sync...
 [2026-09-09 22:31:33] Changed files:
 [2026-09-09 22:31:33]    M git-auto-push.log
+[2026-09-09 22:31:33] All changes added to staging area
+[2026-09-09 22:31:33] git commit: [main 6d9a1a8] Auto sync - 2026-09-09 22:31:33
+[2026-09-09 22:31:33] git commit:  1 file changed, 29 insertions(+)
+[2026-09-09 22:31:33] --- Pushing to GitHub ---
+[2026-09-09 22:31:34] Pulling latest from GitHub...
+[2026-09-09 22:31:34] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-09 22:31:34] git pull (GitHub): error: Please commit or stash them.
+[2026-09-09 22:31:34] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-09-09 22:31:34] Pushing to GitHub...
+[2026-09-09 22:33:05] git push (GitHub): fatal: unable to access 'https://github.com/lishiwen-ai/read-and-book-web.git/': OpenSSL SSL_read: OpenSSL/3.5.7: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+[2026-09-09 22:33:05] FAILED: GitHub push failed (exit code: 128)
+[2026-09-09 22:33:05] --- Pushing to Gitee ---
+[2026-09-09 22:33:05] Pulling latest from Gitee...
+[2026-09-09 22:33:06] git pull (Gitee): error: cannot pull with rebase: You have unstaged changes.
+[2026-09-09 22:33:06] git pull (Gitee): error: Please commit or stash them.
+[2026-09-09 22:33:06] WARNING: Gitee pull may have conflicts (exit code: 128)
+[2026-09-09 22:33:06] Pushing to Gitee...
+[2026-09-09 22:33:08] git push (Gitee): remote: Powered by [01;33mGITEE.COM [0m[1.1.23]        
+[2026-09-09 22:33:08] git push (Gitee): remote: Set trace flag 06405b94        
+[2026-09-09 22:33:08] git push (Gitee): To https://gitee.com/lsw0427/read-and-book-web.git
+[2026-09-09 22:33:08] git push (Gitee):    77d1065..6d9a1a8  main -> main
+[2026-09-09 22:33:08] SUCCESS: Pushed to Gitee!
+[2026-09-09 22:33:08] ===== Sync Complete =====
+[2026-09-09 22:41:55] ===== Start Auto Push Check (Dual Platform) =====
+[2026-09-09 22:41:55] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-09-09 22:41:55] File changes detected, starting sync...
+[2026-09-09 22:41:55] Changed files:
+[2026-09-09 22:41:55]    M git-auto-push.log
