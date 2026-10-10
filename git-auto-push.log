@@ -10100,3 +10100,17 @@
 [2026-10-10 18:25:21] File changes detected, starting sync...
 [2026-10-10 18:25:21] Changed files:
 [2026-10-10 18:25:21]    M git-auto-push.log
+[2026-10-10 18:25:21] All changes added to staging area
+[2026-10-10 18:25:21] git commit: [main 4a537d0] Auto sync - 2026-10-10 18:25:21
+[2026-10-10 18:25:21] git commit:  1 file changed, 29 insertions(+)
+[2026-10-10 18:25:21] --- Pushing to GitHub ---
+[2026-10-10 18:25:21] Pulling latest from GitHub...
+[2026-10-10 18:25:21] git pull (GitHub): error: cannot pull with rebase: You have unstaged changes.
+[2026-10-10 18:25:21] git pull (GitHub): error: Please commit or stash them.
+[2026-10-10 18:25:21] WARNING: GitHub pull may have conflicts (exit code: 128)
+[2026-10-10 18:25:21] Pushing to GitHub...
+[2026-10-10 18:25:23] ===== Start Auto Push Check (Dual Platform) =====
+[2026-10-10 18:25:23] Project path: C:\Users\LSWli\Documents\Codex\2026-08-29\qin
+[2026-10-10 18:25:23] File changes detected, starting sync...
+[2026-10-10 18:25:23] Changed files:
+[2026-10-10 18:25:23]    M git-auto-push.log
